@@ -433,6 +433,15 @@
     opacity: 1;
     transform: translateY(0);
   }
+  .toast-message.loading {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    background: rgba(20, 20, 20, 0.98);
+    border: 1px solid var(--border2);
+    box-shadow: 0 0 10px rgba(0,0,0,0.45);
+    pointer-events: auto;
+  }
+
 
   .src-feed-error {
     display: block;
@@ -979,7 +988,41 @@ function formatLastUpdated(isoString) {
   }
 }
 
+let loadingToastTimer = null;
+let loadingToastStart = null;
+
+function showLoadingToast(baseMessage = 'Feeds werden geladen') {
+  loadingToastStart = Date.now();
+  let toast = document.getElementById('toastMessage');
+  if (!toast) {
+    const container = document.createElement('div');
+    container.id = 'toastMessage';
+    container.className = 'toast-message loading';
+    document.body.appendChild(container);
+    toast = container;
+  }
+  toast.classList.add('show', 'loading');
+  const updateText = () => {
+    const seconds = Math.floor((Date.now() - loadingToastStart) / 1000);
+    toast.textContent = `${baseMessage} … (${seconds} s)`;
+  };
+  updateText();
+  if (loadingToastTimer) clearInterval(loadingToastTimer);
+  loadingToastTimer = setInterval(updateText, 1000);
+}
+
+function hideLoadingToast() {
+  const toast = document.getElementById('toastMessage');
+  if (!toast) return;
+  clearInterval(loadingToastTimer);
+  loadingToastTimer = null;
+  loadingToastStart = null;
+  toast.classList.remove('loading');
+  toast.classList.remove('show');
+}
+
 function showToast(message, duration = 2500) {
+  hideLoadingToast();
   let toast = document.getElementById('toastMessage');
   if (!toast) {
     const container = document.createElement('div');
@@ -1226,6 +1269,8 @@ async function refreshSource(src) {
   const feed = FEEDS.find(f => f.id === src);
   if (!feed) return;
 
+  showLoadingToast(`Aktualisiere ${feed.name}`);
+
   const mainBtn = document.getElementById('refreshBtn');
   if (mainBtn) {
     mainBtn.disabled = true;
@@ -1261,9 +1306,14 @@ async function refreshSource(src) {
     setFeedError(src, e.message || e, 'error');
     showErrorToast(`${feed.name}: ${e.message || e}`);
   } finally {
+    hideLoadingToast();
     if (btn) {
       btn.disabled = false;
       btn.classList.remove('loading');
+    }
+    if (mainBtn) {
+      mainBtn.disabled = false;
+      mainBtn.classList.remove('spinning');
     }
   }
 }
@@ -1300,6 +1350,7 @@ function applyFilters() {
 }
 
 async function loadAll() {
+  showLoadingToast('Feeds werden geladen');
   const btn = document.getElementById('refreshBtn');
   if (btn) {
     btn.classList.add('spinning');
@@ -1368,6 +1419,7 @@ async function loadAll() {
     }
   }
 
+  hideLoadingToast();
   if (btn) {
     btn.classList.remove('spinning');
     btn.disabled = false;
