@@ -454,6 +454,17 @@
     max-width: 120px;
   }
 
+  .disclaimer {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 6px 12px;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
   .src-refresh-btn {
     margin-left: auto;
     border: none;
@@ -734,6 +745,10 @@
     </div>
   </main>
 </div>
+
+<footer class="disclaimer">
+  &copy; 2026 - Dieses Webprojekt wurde von Sebastian Laube umgesetzt. Inhalte werden über Aggregierte RSS-Feeds geladen; sie stammen nicht von mir und unterliegen den jeweiligen Medienquellen.
+</footer>
 
 <script>
 const PROXY = 'https://api.allorigins.win/raw?url='; // RAW gibt XML direkt zurück, stabiler für RSS-Parsing
