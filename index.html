@@ -443,6 +443,7 @@
   .tag-mehr      { background: rgba(160,25,120,.25); color: #e9a8e3; }
   .tag-bbcpersian{ background: rgba(110,50,130,.22); color: #d4abff; }
   .tag-presstv   { background: rgba(0,90,90,.2);    color: #7ae0e0; }
+  .tag-iranintl  { background: rgba(180,20,40,.25);  color: #ff8fa0; }
   .tag-netblocks{ background: rgba(120,80,0,.25);  color: #f9bf74; }
   .tag-default   { background: rgba(100,100,100,.2); color: #aaa; }
 
@@ -458,6 +459,7 @@
   .dot-mehr      { background: #e9a8e3; }
   .dot-bbcpersian{ background: #d4abff; }
   .dot-presstv   { background: #7ae0e0; }
+  .dot-iranintl  { background: #ff8fa0; }
   .dot-default   { background: #888; }
 
   /* Scrollbar */
@@ -473,7 +475,6 @@
 </style>
 </head>
 <body>
-
 <header class="topbar">
   <div class="logo">
     <span class="logo-flag">🇮🇷</span>
@@ -574,9 +575,15 @@
         <button class="src-refresh-btn" onclick="event.stopPropagation(); refreshSource('presstv');" title="PressTV aktualisieren">↻</button>
         <span class="src-count" id="cnt-presstv">0</span>
       </li>
+      <li class="src-item" data-src="iranintl" onclick="filterSource('iranintl')">
+        <span class="src-dot dot-iranintl"></span>
+        Iran International
+        <button class="src-refresh-btn" onclick="event.stopPropagation(); refreshSource('iranintl');" title="Iran International aktualisieren">↻</button>
+        <span class="src-count" id="cnt-iranintl">0</span>
+      </li>
     </ul>
 
-    <div class="keyword-section">
+    <div class="keyword-section"
       <div class="sidebar-section-label" style="margin-bottom:8px">Suche</div>
       <input class="keyword-input" type="text" id="searchInput" placeholder="Stichwort…" oninput="applyFilters()">
     </div>
@@ -657,6 +664,7 @@ const FEEDS = [
   { id: 'tagesschau', name: 'Tagesschau',   url: 'https://www.tagesschau.de/xml/rss2' },
   { id: 'spiegel',    name: 'Spiegel',      url: 'https://www.spiegel.de/schlagzeilen/tops/index.rss' },
   { id: 'zdf',        name: 'ZDF heute',    url: 'https://www.zdf.de/rss/zdf/nachrichten' },
+  { id: 'iranintl',   name: 'Iran International', url: 'https://www.iranintl.com/rss' },
   { id: 'zeit',       name: 'Zeit Online',  url: 'https://newsfeed.zeit.de/all' },
   { id: 'nytimes',    name: 'NYTimes',      url: 'https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml' },
   { id: 'washpost',   name: 'WashingtonPost', url: 'https://feeds.washingtonpost.com/rss/world' },
