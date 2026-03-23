@@ -8,7 +8,6 @@ const ALLOWED_HOSTS = [
   'newsfeed.zeit.de',
   'rss.nytimes.com',
   'feeds.washingtonpost.com',
-  'rss.cnn.com',
   'feeds.npr.org',
   'mastodon.social',
   'www.mehrnews.com',
@@ -19,7 +18,7 @@ const ALLOWED_HOSTS = [
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
@@ -27,17 +26,23 @@ const CACHE_TTL = 300; // 5 Minuten
 
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
     // Preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
-    if (request.method !== 'GET') {
-      return jsonError(405, 'Only GET requests allowed');
+    // ── Übersetzungs-Endpoint ──
+    if (url.pathname === '/translate' && request.method === 'POST') {
+      return handleTranslate(request, env);
     }
 
-    const { searchParams } = new URL(request.url);
-    const targetUrl = searchParams.get('url');
+    if (request.method !== 'GET') {
+      return jsonError(405, 'Only GET or POST /translate allowed');
+    }
+
+    const targetUrl = url.searchParams.get('url');
 
     if (!targetUrl) {
       return jsonError(400, 'Missing ?url= parameter');
@@ -104,6 +109,63 @@ export default {
     }
   },
 };
+
+// ── Übersetzung via Workers AI (m2m100) ──
+const MAX_CHUNK_LENGTH = 1024;
+
+async function handleTranslate(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError(400, 'Invalid JSON body');
+  }
+
+  const { text, source = 'fa', target = 'de' } = body;
+  if (!text || typeof text !== 'string') {
+    return jsonError(400, 'Missing "text" field');
+  }
+
+  try {
+    // Langen Text in Chunks aufteilen (an Satzgrenzen)
+    const chunks = splitTextIntoChunks(text, MAX_CHUNK_LENGTH);
+    const translations = [];
+
+    for (const chunk of chunks) {
+      const result = await env.AI.run('@cf/meta/m2m100-1.2b', {
+        text: chunk,
+        source_lang: source,
+        target_lang: target,
+      });
+      translations.push(result.translated_text);
+    }
+
+    return new Response(JSON.stringify({ translated_text: translations.join(' ') }), {
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    return jsonError(502, `Translation failed: ${err.message}`);
+  }
+}
+
+function splitTextIntoChunks(text, maxLen) {
+  if (text.length <= maxLen) return [text];
+  const chunks = [];
+  let remaining = text;
+  while (remaining.length > 0) {
+    if (remaining.length <= maxLen) {
+      chunks.push(remaining);
+      break;
+    }
+    // Am letzten Satzendezeichen vor maxLen schneiden
+    let cut = remaining.lastIndexOf('.', maxLen);
+    if (cut < maxLen * 0.3) cut = remaining.lastIndexOf(' ', maxLen);
+    if (cut < maxLen * 0.3) cut = maxLen;
+    chunks.push(remaining.slice(0, cut + 1).trim());
+    remaining = remaining.slice(cut + 1).trim();
+  }
+  return chunks;
+}
 
 function jsonError(status, message) {
   return new Response(JSON.stringify({ error: message }), {

@@ -51,7 +51,6 @@ const FEEDS = [
   { id: 'zeit',       name: 'Zeit Online',  url: 'https://newsfeed.zeit.de/all' },
   { id: 'nytimes',    name: 'NYTimes',      url: 'https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml' },
   { id: 'washpost',   name: 'WashingtonPost', url: 'https://feeds.washingtonpost.com/rss/world' },
-  { id: 'cnn',        name: 'CNN',          url: 'http://rss.cnn.com/rss/edition_world.rss' },
   { id: 'npr',        name: 'NPR',          url: 'https://feeds.npr.org/1004/rss.xml' },
   { id: 'netblocks',  name: 'NetBlocks (Mastodon)', url: 'https://mastodon.social/@netblocks.rss' },
   { id: 'mehr',       name: 'Mehr News (FA)', url: 'https://www.mehrnews.com/rss' },
@@ -365,11 +364,15 @@ function translateArticle(text, targetId) {
   if (!target) return;
   target.textContent = 'Übersetzung wird geladen...';
 
-  fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=fa|de`)
+  fetch(PROXY_PRIMARY.replace('/?url=', '/translate'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, source: 'fa', target: 'de' }),
+  })
     .then(res => res.json())
     .then(data => {
-      if (data && data.responseData && data.responseData.translatedText) {
-        target.textContent = data.responseData.translatedText;
+      if (data && data.translated_text) {
+        target.textContent = data.translated_text;
       } else {
         target.textContent = 'Übersetzung fehlgeschlagen';
       }
