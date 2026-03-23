@@ -113,7 +113,7 @@ function pruneOldArticles(days = 60) {
   const threshold = Date.now() - (days * 24 * 60 * 60 * 1000);
   allItems = allItems.filter(item => {
     const d = new Date(item.date);
-    return !isNaN(d) && d.getTime() >= threshold;
+    return isNaN(d) || d.getTime() >= threshold;
   });
   return removeOldArticlesFromDB(days);
 }
@@ -284,7 +284,7 @@ async function fetchFeed(feed) {
             link = linkNode.getAttribute('href') || linkNode.textContent || '';
           }
         }
-        const date = getEl(item, 'pubDate') || getEl(item, 'published') || getEl(item, 'updated') || '';
+        const date = getEl(item, 'pubDate') || getEl(item, 'published') || getEl(item, 'updated') || new Date().toISOString();
 
         if (!title) {
           const plain = desc.replace(/<[^>]+>/g, '').trim();
