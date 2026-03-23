@@ -1,0 +1,9 @@
+name = "rss-cors-proxy"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Nach dem Deploy erreichbar unter:
+# https://rss-cors-proxy.<dein-account>.workers.dev
+
+[observability]
+enabled = true
