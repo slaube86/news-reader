@@ -12,7 +12,6 @@ const ALLOWED_HOSTS = [
   'mastodon.social',
   'www.mehrnews.com',
   'www.bbc.com',
-  'www.presstv.ir',
   'www.iranintl.com'
 ];
 

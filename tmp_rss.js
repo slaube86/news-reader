@@ -55,7 +55,6 @@ const FEEDS = [
   { id: 'netblocks',  name: 'NetBlocks (Mastodon)', url: 'https://mastodon.social/@netblocks.rss' },
   { id: 'mehr',       name: 'Mehr News (FA)', url: 'https://www.mehrnews.com/rss' },
   { id: 'bbcpersian', name: 'BBC Persian',  url: 'https://www.bbc.com/persian/index.xml' },
-  { id: 'presstv',   name: 'PressTV',      url: 'https://www.presstv.ir/rss' },
 ];
 
 const IRAN_TERMS = [
@@ -400,7 +399,7 @@ function addTranslateListeners() {
 function renderArticle(it) {
   const tagClass = `tag-${it.source}`;
   const safeLink = (it.link || '#').replace(/"/g, '&quot;');
-  const items = ['bbcpersian', 'presstv', 'mehr'];
+  const items = ['bbcpersian', 'mehr'];
   const isFarsi = items.includes(it.source);
   const translationId = `translate-${Math.random().toString(36).slice(2)}`;
 
