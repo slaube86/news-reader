@@ -475,9 +475,6 @@ async function refreshSource(src) {
     }
     lastRefreshTimes[src] = new Date().toISOString();
     clearFeedError(src);
-    await saveArticlesToDB(allItems);
-    await pruneOldArticles(60);
-    await syncSavedArticleIds();
     updateSidebar();
     applyFilters();
     if (items.length === 0) {
@@ -486,6 +483,13 @@ async function refreshSource(src) {
     } else {
       clearFeedError(src);
       showToast(`${feed.name} aktualisiert (${items.length} Artikel)`);
+    }
+    try {
+      await saveArticlesToDB(allItems);
+      await pruneOldArticles(60);
+      await syncSavedArticleIds();
+    } catch (dbErr) {
+      console.warn('IndexedDB Fehler (refreshSource):', dbErr);
     }
   } catch (e) {
     setFeedError(src, e.message || e, 'error');
@@ -596,15 +600,19 @@ async function loadAll() {
 
     const savedItems = await getSavedArticlesFromDB().catch(() => []);
     allItems = mergeArticles(savedItems, fetchedItems);
-    await saveArticlesToDB(allItems);
-    await pruneOldArticles(60);
-    await syncSavedArticleIds();
     updateSidebar();
     applyFilters();
     showToast('Alle Quellen wurden aktualisiert');
 
     if (hasChanged) {
       console.info('Cache aktualisiert: neue/aktualisierte Artikel gefunden');
+    }
+    try {
+      await saveArticlesToDB(allItems);
+      await pruneOldArticles(60);
+      await syncSavedArticleIds();
+    } catch (dbErr) {
+      console.warn('IndexedDB Fehler (loadAll):', dbErr);
     }
   }
 
