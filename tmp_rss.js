@@ -10,17 +10,49 @@ const DB_NAME = 'IranNewsReaderDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'savedArticles';
 
+let _dbInstance = null;
+
 function openDB() {
+  if (_dbInstance) {
+    try {
+      if (_dbInstance.objectStoreNames.contains(STORE_NAME)) {
+        return Promise.resolve(_dbInstance);
+      }
+    } catch (e) {
+      _dbInstance = null;
+    }
+  }
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    let request;
+    try {
+      request = indexedDB.open(DB_NAME, DB_VERSION);
+    } catch (e) {
+      console.error('IndexedDB nicht verfügbar:', e);
+      return reject(e);
+    }
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        console.info('IndexedDB: Object Store erstellt');
       }
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    request.onblocked = () => {
+      console.warn('IndexedDB: Verbindung blockiert – andere Tabs schließen');
+    };
+    request.onsuccess = () => {
+      _dbInstance = request.result;
+      _dbInstance.onclose = () => { _dbInstance = null; };
+      _dbInstance.onversionchange = () => {
+        _dbInstance.close();
+        _dbInstance = null;
+      };
+      resolve(_dbInstance);
+    };
+    request.onerror = () => {
+      console.error('IndexedDB open Fehler:', request.error);
+      reject(request.error);
+    };
   });
 }
 
@@ -30,8 +62,18 @@ function saveArticlesToDB(articles) {
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
     articles.forEach(article => store.put(article));
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => {
+      console.info(`IndexedDB: ${articles.length} Artikel gespeichert`);
+      resolve();
+    };
+    tx.onerror = () => {
+      console.error('IndexedDB save Fehler:', tx.error);
+      reject(tx.error);
+    };
+    tx.onabort = () => {
+      console.error('IndexedDB save abgebrochen:', tx.error);
+      reject(tx.error || new Error('Transaction aborted'));
+    };
   }));
 }
 
@@ -40,7 +82,10 @@ function getSavedArticlesFromDB() {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const req = tx.objectStore(STORE_NAME).getAll();
     req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onerror = () => {
+      console.error('IndexedDB read Fehler:', req.error);
+      reject(req.error);
+    };
   }));
 }
 
@@ -84,7 +129,8 @@ function loadSavedArticlesIntoMemory() {
       applyFilters();
       showToast('IndexedDB: Artikel geladen, suche nach Updates...');
     }
-  }).catch(() => {
+  }).catch((e) => {
+    console.error('IndexedDB: loadSavedArticlesIntoMemory fehlgeschlagen:', e);
     savedArticleIds = new Set();
   });
 }
@@ -94,7 +140,8 @@ function syncSavedArticleIds() {
     savedArticleIds = new Set(items.map(i => i.id));
     updateSidebar();
     applyFilters();
-  }).catch(() => {
+  }).catch((e) => {
+    console.error('IndexedDB: syncSavedArticleIds fehlgeschlagen:', e);
     savedArticleIds = new Set();
   });
 }
@@ -135,7 +182,10 @@ function removeOldArticlesFromDB(days = 60) {
       }
     };
     tx.oncomplete = resolve;
-    tx.onerror = () => reject(tx.error);
+    tx.onerror = () => {
+      console.error('IndexedDB prune Fehler:', tx.error);
+      reject(tx.error);
+    };
   }));
 }
 
@@ -489,7 +539,7 @@ async function refreshSource(src) {
       await pruneOldArticles(60);
       await syncSavedArticleIds();
     } catch (dbErr) {
-      console.warn('IndexedDB Fehler (refreshSource):', dbErr);
+      console.error('IndexedDB Fehler (refreshSource):', dbErr);
     }
   } catch (e) {
     setFeedError(src, e.message || e, 'error');
@@ -612,7 +662,7 @@ async function loadAll() {
       await pruneOldArticles(60);
       await syncSavedArticleIds();
     } catch (dbErr) {
-      console.warn('IndexedDB Fehler (loadAll):', dbErr);
+      console.error('IndexedDB Fehler (loadAll):', dbErr);
     }
   }
 
