@@ -725,6 +725,7 @@
       <div class="state-box">
         <div class="loader"></div>
         <p>Lade Iran-Nachrichten…</p>
+        <small>Das erste Laden kann bis zu 1 Minute dauern</small>
       </div>
     </div>
   </main>
@@ -809,6 +810,7 @@ let currentSource = 'today';
 let lastRefreshTimes = {};
 let savedArticleIds = new Set();
 let nextRefreshSeconds = 900;
+let isLoadingFeeds = true;
 
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -1159,6 +1161,13 @@ function getFilteredItems() {
 
 function renderItems(items) {
   if (!items.length) {
+    if (isLoadingFeeds) {
+      return `<div class="state-box">
+        <div class="loader"></div>
+        <p>Artikel werden geladen…</p>
+        <small>Das kann bis zu 1 Minute dauern</small>
+      </div>`;
+    }
     return `<div class="state-box">
       <span class="icon">📭</span>
       <p>Keine Artikel gefunden</p>
@@ -1373,6 +1382,7 @@ function applyFilters() {
 }
 
 async function loadAll() {
+  isLoadingFeeds = true;
   showLoadingToast('Feeds werden geladen');
   const btn = document.getElementById('refreshBtn');
   if (btn) {
@@ -1452,6 +1462,7 @@ async function loadAll() {
     }
   }
 
+  isLoadingFeeds = false;
   hideLoadingToast();
   if (btn) {
     btn.classList.remove('spinning');
