@@ -376,15 +376,6 @@
     white-space: nowrap;
   }
 
-  .saved-badge {
-    background: rgba(34,197,94,0.15);
-    color: #68d391;
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 999px;
-    margin-left: 6px;
-  }
-
   .art-translate-btn:hover,
   .art-save-btn:hover {
     color: var(--text);
@@ -621,15 +612,15 @@
   <nav class="sidebar" id="sidebarNav">
     <div class="sidebar-section-label">Quellen</div>
     <ul class="src-list" id="srcList">
-      <li class="src-item active" data-src="all" onclick="filterSource('all')">
+      <li class="src-item" data-src="all" onclick="filterSource('all')">
         <span class="src-dot" style="background:#888"></span>
         Alle Quellen
         <span class="src-count" id="cnt-all">0</span>
       </li>
-      <li class="src-item" data-src="saved" onclick="filterSource('saved')">
-        <span class="src-dot" style="background:#2e8b57"></span>
-        Gespeicherte Artikel
-        <span class="src-count" id="cnt-saved">0</span>
+      <li class="src-item active" data-src="today" onclick="filterSource('today')">
+        <span class="src-dot" style="background:#f59e0b"></span>
+        Heute
+        <span class="src-count" id="cnt-today">0</span>
       </li>
       <!-- 🇩🇪 Deutsch -->
       <li class="src-item" data-src="tagesschau" onclick="filterSource('tagesschau')">
@@ -814,7 +805,7 @@ const IRAN_TERMS = [
 ];
 
 let allItems = [];
-let currentSource = 'all';
+let currentSource = 'today';
 let lastRefreshTimes = {};
 let savedArticleIds = new Set();
 let nextRefreshSeconds = 900;
@@ -876,8 +867,8 @@ setInterval(() => {
 function loadSavedArticlesIntoMemory() {
   return getSavedArticlesFromDB().then(items => {
     savedArticleIds = new Set(items.map(i => i.id));
-    currentSource = 'all';
-    filterSource('all');
+    currentSource = 'today';
+    filterSource('today');
     if (items.length) {
       allItems = items;
       updateSidebar();
@@ -1117,7 +1108,7 @@ async function fetchFeed(feed) {
             link = linkNode.getAttribute('href') || linkNode.textContent || '';
           }
         }
-        const date = getEl(item, 'pubDate') || getEl(item, 'published') || getEl(item, 'updated') || new Date().toISOString();
+        const date = getEl(item, 'pubDate') || getEl(item, 'published') || getEl(item, 'updated');
 
         if (!title) {
           const plain = desc.replace(/<[^>]+>/g, '').trim();
@@ -1145,9 +1136,13 @@ function getFilteredItems() {
   const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
   let items;
   if (currentSource === 'all') {
-    items = [...allItems];
-  } else if (currentSource === 'saved') {
-    items = allItems.filter(i => savedArticleIds.has(i.id));
+    items = allItems.filter(i => i.date && !isNaN(new Date(i.date)));
+  } else if (currentSource === 'today') {
+    const now = new Date();
+    items = allItems.filter(i => {
+      const d = new Date(i.date);
+      return d.toDateString() === now.toDateString();
+    });
   } else {
     items = allItems.filter(i => i.source === currentSource);
   }
@@ -1243,7 +1238,6 @@ function renderArticle(it) {
     <a href="${safeLink}" target="_blank" rel="noopener noreferrer">
       <div class="art-top">
         <span class="src-tag ${tagClass}">${it.sourceName}</span>
-        ${isSaved ? '<span class="saved-badge">✅ In DB</span>' : ''}
         <span class="art-date">${formatDate(it.date)}</span>
       </div>
       <div class="art-title">${it.title}</div>
@@ -1283,10 +1277,11 @@ function updateSidebar() {
   const counts = {};
   FEEDS.forEach(f => counts[f.id] = 0);
   allItems.forEach(it => { if (counts[it.source] !== undefined) counts[it.source]++; });
-  const savedCount = allItems.filter(i => savedArticleIds.has(i.id)).length;
+  const now = new Date();
+  const todayCount = allItems.filter(i => new Date(i.date).toDateString() === now.toDateString()).length;
 
   document.getElementById('cnt-all').textContent = allItems.length;
-  document.getElementById('cnt-saved').textContent = savedCount;
+  document.getElementById('cnt-today').textContent = todayCount;
   FEEDS.forEach(f => {
     const countEl = document.getElementById('cnt-' + f.id);
     if (countEl) countEl.textContent = counts[f.id];

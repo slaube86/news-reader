@@ -69,15 +69,15 @@ const IRAN_TERMS = [
 ];
 
 let allItems = [];
-let currentSource = 'all';
+let currentSource = 'today';
 let lastRefreshTimes = {};
 let savedArticleIds = new Set();
 
 function loadSavedArticlesIntoMemory() {
   return getSavedArticlesFromDB().then(items => {
     savedArticleIds = new Set(items.map(i => i.id));
-    currentSource = 'all';
-    filterSource('all');
+    currentSource = 'today';
+    filterSource('today');
     if (items.length) {
       allItems = items;
       updateSidebar();
@@ -409,7 +409,6 @@ function renderArticle(it) {
     <a href="${safeLink}" target="_blank" rel="noopener noreferrer">
       <div class="art-top">
         <span class="src-tag ${tagClass}">${it.sourceName}</span>
-        ${isSaved ? '<span class="saved-badge">✅ In DB</span>' : ''}
         <span class="art-date">${formatDate(it.date)}</span>
       </div>
       <div class="art-title">${it.title}</div>
