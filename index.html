@@ -743,10 +743,13 @@ const PROXY_FALLBACK = 'https://api.allorigins.win/raw?url=';
 let PROXY = PROXY_PRIMARY;
 
 const DB_NAME = 'IranNewsReaderDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'savedArticles';
 
 let _dbInstance = null;
+
+// Alte DB "savedArticles" aufräumen (Überbleibsel früherer Version)
+try { indexedDB.deleteDatabase('savedArticles'); } catch(e) {}
 
 function openDB() {
   if (_dbInstance) {
@@ -777,7 +780,23 @@ function openDB() {
       console.warn('IndexedDB: Verbindung blockiert – andere Tabs schließen');
     };
     request.onsuccess = () => {
-      _dbInstance = request.result;
+      const db = request.result;
+      // Recovery: falls Store trotz Upgrade fehlt, DB löschen und neu anlegen
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        console.warn('IndexedDB: Store fehlt nach open – lösche DB und erstelle neu');
+        db.close();
+        const delReq = indexedDB.deleteDatabase(DB_NAME);
+        delReq.onsuccess = () => {
+          _dbInstance = null;
+          openDB().then(resolve, reject);
+        };
+        delReq.onerror = () => {
+          console.error('IndexedDB: DB löschen fehlgeschlagen');
+          reject(delReq.error);
+        };
+        return;
+      }
+      _dbInstance = db;
       _dbInstance.onclose = () => { _dbInstance = null; };
       _dbInstance.onversionchange = () => {
         _dbInstance.close();
