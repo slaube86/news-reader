@@ -100,6 +100,8 @@ const FEEDS = [
   { id: 'netblocks',  name: 'NetBlocks (Mastodon)', url: 'https://mastodon.social/@netblocks.rss' },
   { id: 'mehr',       name: 'Mehr News (FA)', url: 'https://www.mehrnews.com/rss' },
   { id: 'bbcpersian', name: 'BBC Persian',  url: 'https://www.bbc.com/persian/index.xml' },
+  { id: 'aljazeera',  name: 'Al Jazeera',   url: 'https://www.aljazeera.com/xml/rss/all.xml' },
+  { id: 'entekhab',   name: 'Entekhab (FA)', url: 'https://www.entekhab.ir/fa/rss/allnews' },
 ];
 
 const IRAN_TERMS = [

@@ -483,6 +483,8 @@
   .tag-bbcpersian{ background: rgba(110,50,130,.22); color: #d4abff; }
   .tag-iranintl  { background: rgba(180,20,40,.25);  color: #ff8fa0; }
   .tag-netblocks{ background: rgba(120,80,0,.25);  color: #f9bf74; }
+  .tag-aljazeera { background: rgba(210,150,0,.25);  color: #f5c842; }
+  .tag-entekhab  { background: rgba(0,140,80,.25);   color: #5ee8a0; }
   .tag-default   { background: rgba(100,100,100,.2); color: #aaa; }
 
   .dot-tagesschau { background: #7cc8e8; }
@@ -496,6 +498,8 @@
   .dot-mehr      { background: #e9a8e3; }
   .dot-bbcpersian{ background: #d4abff; }
   .dot-iranintl  { background: #ff8fa0; }
+  .dot-aljazeera { background: #f5c842; }
+  .dot-entekhab  { background: #5ee8a0; }
   .dot-default   { background: #888; }
 
   /* Scrollbar */
@@ -654,6 +658,12 @@
         <button class="src-refresh-btn" onclick="event.stopPropagation(); refreshSource('iranintl');" title="Iran International aktualisieren">↻</button>
         <span class="src-count" id="cnt-iranintl">0</span>
       </li>
+      <li class="src-item" data-src="aljazeera" onclick="filterSource('aljazeera')">
+        <span class="src-dot dot-aljazeera"></span>
+        Al Jazeera
+        <button class="src-refresh-btn" onclick="event.stopPropagation(); refreshSource('aljazeera');" title="Al Jazeera aktualisieren">↻</button>
+        <span class="src-count" id="cnt-aljazeera">0</span>
+      </li>
       <li class="src-item" data-src="mehr" onclick="filterSource('mehr')">
         <span class="src-dot dot-mehr"></span>
         Mehr News (FA)
@@ -665,6 +675,12 @@
         BBC Persian
         <button class="src-refresh-btn" onclick="event.stopPropagation(); refreshSource('bbcpersian');" title="BBC Persian aktualisieren">↻</button>
         <span class="src-count" id="cnt-bbcpersian">0</span>
+      </li>
+      <li class="src-item" data-src="entekhab" onclick="filterSource('entekhab')">
+        <span class="src-dot dot-entekhab"></span>
+        Entekhab (FA)
+        <button class="src-refresh-btn" onclick="event.stopPropagation(); refreshSource('entekhab');" title="Entekhab aktualisieren">↻</button>
+        <span class="src-count" id="cnt-entekhab">0</span>
       </li>
       <!-- 🇺🇸 Amerikanisch -->
       <li class="src-item" data-src="nytimes" onclick="filterSource('nytimes')">
@@ -856,6 +872,8 @@ const FEEDS = [
   { id: 'netblocks',  name: 'NetBlocks (Mastodon)', url: 'https://mastodon.social/@netblocks.rss' },
   { id: 'mehr',       name: 'Mehr News (FA)', url: 'https://www.mehrnews.com/rss' },
   { id: 'bbcpersian', name: 'BBC Persian',  url: 'https://www.bbc.com/persian/index.xml' },
+  { id: 'aljazeera',  name: 'Al Jazeera',   url: 'https://www.aljazeera.com/xml/rss/all.xml' },
+  { id: 'entekhab',   name: 'Entekhab (FA)', url: 'https://www.entekhab.ir/fa/rss/allnews' },
 ];
 
 const IRAN_TERMS = [

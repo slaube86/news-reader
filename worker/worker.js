@@ -12,7 +12,9 @@ const ALLOWED_HOSTS = [
   'mastodon.social',
   'www.mehrnews.com',
   'www.bbc.com',
-  'www.iranintl.com'
+  'www.iranintl.com',
+  'www.aljazeera.com',
+  'www.entekhab.ir'
 ];
 
 const CORS_HEADERS = {
