@@ -451,7 +451,7 @@ function addTranslateListeners() {
 function renderArticle(it) {
   const tagClass = `tag-${it.source}`;
   const safeLink = (it.link || '#').replace(/"/g, '&quot;');
-  const items = ['bbcpersian', 'mehr'];
+  const items = ['bbcpersian', 'mehr', 'iranintl', 'entekhab'];
   const isFarsi = items.includes(it.source);
   const translationId = `translate-${Math.random().toString(36).slice(2)}`;
 
