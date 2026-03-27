@@ -3,4 +3,5 @@ export interface Toast {
   message: string
   type: 'success' | 'error' | 'loading'
   duration?: number
+  agent?: string
 }

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Toast } from '@/types/toast'
+import { pickRandomDialog } from '@/config/spyDialogs'
+import type { SpyDialog } from '@/config/spyDialogs'
 
 export const useUiStore = defineStore('ui', () => {
   const sidebarOpen = ref(false)
@@ -9,6 +11,9 @@ export const useUiStore = defineStore('ui', () => {
 
   let _loadingTimer: ReturnType<typeof setInterval> | null = null
   let _loadingStart: number | null = null
+  let _chatTimers: ReturnType<typeof setTimeout>[] = []
+  let _currentDialog: SpyDialog | null = null
+  let _msgIndex = 0
 
   function toggleSidebar(open?: boolean) {
     sidebarOpen.value = open === undefined ? !sidebarOpen.value : open
@@ -44,25 +49,72 @@ export const useUiStore = defineStore('ui', () => {
     showToast(`⚠ ${message}`, duration)
   }
 
-  function showLoadingToast(baseMessage: string = 'Feeds werden geladen') {
+  function showLoadingToast(spyChat = false) {
     _loadingStart = Date.now()
     clearToasts()
+    _cleanupChatTimers()
 
-    const toastId = `loading-${Date.now()}`
-    addToast({
-      id: toastId,
-      message: `${baseMessage} … (0 s)`,
-      type: 'loading',
-    })
+    if (spyChat) {
+      _currentDialog = pickRandomDialog()
+      _msgIndex = 0
+      _scheduleNextChatMessage()
+    } else {
+      const toastId = `loading-${Date.now()}`
+      addToast({
+        id: toastId,
+        message: 'Feeds werden geladen… (0 s)',
+        type: 'loading',
+      })
+      if (_loadingTimer) clearInterval(_loadingTimer)
+      _loadingTimer = setInterval(() => {
+        const seconds = Math.floor((Date.now() - (_loadingStart || Date.now())) / 1000)
+        const existing = toasts.value.find((t) => t.id === toastId)
+        if (existing) {
+          existing.message = `Feeds werden geladen… (${seconds} s)`
+        }
+      }, 1000)
+    }
+  }
 
-    if (_loadingTimer) clearInterval(_loadingTimer)
-    _loadingTimer = setInterval(() => {
-      const seconds = Math.floor((Date.now() - (_loadingStart || Date.now())) / 1000)
-      const existing = toasts.value.find((t) => t.id === toastId)
-      if (existing) {
-        existing.message = `${baseMessage} … (${seconds} s)`
+  function _scheduleNextChatMessage() {
+    if (!_currentDialog || !_loadingStart) return
+
+    const dialog = _currentDialog
+    if (_msgIndex >= dialog.messages.length) {
+      // restart with new dialog
+      _currentDialog = pickRandomDialog()
+      _msgIndex = 0
+      const timer = setTimeout(() => _scheduleNextChatMessage(), 1500)
+      _chatTimers.push(timer)
+      return
+    }
+
+    const msg = dialog.messages[_msgIndex]
+    const delay = _msgIndex === 0 ? 600 : 2000 + Math.random() * 1500
+
+    const timer = setTimeout(() => {
+      // keep max 2 toasts
+      const loadingToasts = toasts.value.filter((t) => t.type === 'loading')
+      if (loadingToasts.length >= 2) {
+        toasts.value = toasts.value.filter((t) => t.id !== loadingToasts[0].id)
       }
-    }, 1000)
+
+      addToast({
+        id: `spy-${Date.now()}-${_msgIndex}`,
+        message: msg.text,
+        type: 'loading',
+        agent: msg.agent,
+      })
+
+      _msgIndex++
+      _scheduleNextChatMessage()
+    }, delay)
+    _chatTimers.push(timer)
+  }
+
+  function _cleanupChatTimers() {
+    _chatTimers.forEach(clearTimeout)
+    _chatTimers = []
   }
 
   function hideLoadingToast() {
@@ -71,6 +123,9 @@ export const useUiStore = defineStore('ui', () => {
       _loadingTimer = null
     }
     _loadingStart = null
+    _cleanupChatTimers()
+    _currentDialog = null
+    _msgIndex = 0
     toasts.value = toasts.value.filter((t) => t.type !== 'loading')
   }
 
