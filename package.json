@@ -1,0 +1,40 @@
+{
+  "name": "news-reader",
+  "version": "1.0.0",
+  "description": "Ein leichter, responsiver Web-Reader für Iran-bezogene Nachrichten aus verschiedenen RSS-Feeds. Diese App wurde von Sebastian Laube umgesetzt und lädt Inhalte direkt aus den Quellen; sie speichert keine eigenen Nachrichten, sondern aggregiert und filtert nur vorhandene Feeds.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src/",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slaube86/news-reader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slaube86/news-reader/issues"
+  },
+  "homepage": "https://github.com/slaube86/news-reader#readme",
+  "dependencies": {
+    "pinia": "^3.0.4",
+    "vue": "^3.5.31",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "eslint": "^10.1.0",
+    "eslint-plugin-vue": "^10.8.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.2",
+    "vite": "^8.0.3",
+    "vue-tsc": "^3.2.6"
+  }
+}

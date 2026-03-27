@@ -1,0 +1,15 @@
+:root {
+  --bg: #0f0f0f;
+  --bg2: #161616;
+  --bg3: #1e1e1e;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8e8e8;
+  --text2: #9a9a9a;
+  --text3: #606060;
+  --accent: #c8392b;
+  --accent2: #e85444;
+  --green: #22c55e;
+  --font: 'IBM Plex Sans', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}

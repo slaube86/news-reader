@@ -1,0 +1,29 @@
+.tag-tagesschau { background: rgba(23,90,120,.35); color: #7cc8e8; }
+.tag-spiegel    { background: rgba(200,80,0,.3);   color: #f0a060; }
+.tag-zdf        { background: rgba(120,40,200,.3);  color: #c088f8; }
+.tag-zeit       { background: rgba(200,20,20,.3);   color: #f08080; }
+.tag-nytimes    { background: rgba(0,65,125,.25);   color: #7ebcff; }
+.tag-washpost   { background: rgba(20,40,80,.25);   color: #aad8ff; }
+.tag-npr        { background: rgba(80,140,30,.25);   color: #c8ff91; }
+.tag-mehr       { background: rgba(160,25,120,.25);  color: #e9a8e3; }
+.tag-bbcpersian { background: rgba(110,50,130,.22);  color: #d4abff; }
+.tag-iranintl   { background: rgba(180,20,40,.25);   color: #ff8fa0; }
+.tag-netblocks  { background: rgba(120,80,0,.25);    color: #f9bf74; }
+.tag-aljazeera  { background: rgba(210,150,0,.25);   color: #f5c842; }
+.tag-entekhab   { background: rgba(0,140,80,.25);    color: #5ee8a0; }
+.tag-default    { background: rgba(100,100,100,.2);  color: #aaa; }
+
+.dot-tagesschau { background: #7cc8e8; }
+.dot-spiegel    { background: #f0a060; }
+.dot-zdf        { background: #c088f8; }
+.dot-zeit       { background: #f08080; }
+.dot-nytimes    { background: #7ebcff; }
+.dot-washpost   { background: #aad8ff; }
+.dot-npr        { background: #c8ff91; }
+.dot-netblocks  { background: #f9bf74; }
+.dot-mehr       { background: #e9a8e3; }
+.dot-bbcpersian { background: #d4abff; }
+.dot-iranintl   { background: #ff8fa0; }
+.dot-aljazeera  { background: #f5c842; }
+.dot-entekhab   { background: #5ee8a0; }
+.dot-default    { background: #888; }
