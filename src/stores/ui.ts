@@ -57,7 +57,14 @@ export const useUiStore = defineStore('ui', () => {
     if (spyChat) {
       _currentDialog = pickRandomDialog()
       _msgIndex = 0
-      _scheduleNextChatMessage()
+      const spyToastId = `spy-loading-${Date.now()}`
+      addToast({
+        id: spyToastId,
+        message: '…',
+        type: 'loading',
+        agent: _currentDialog.agents[0],
+      })
+      _scheduleNextChatMessage(spyToastId)
     } else {
       const toastId = `loading-${Date.now()}`
       addToast({
@@ -76,7 +83,7 @@ export const useUiStore = defineStore('ui', () => {
     }
   }
 
-  function _scheduleNextChatMessage() {
+  function _scheduleNextChatMessage(toastId: string) {
     if (!_currentDialog || !_loadingStart) return
 
     const dialog = _currentDialog
@@ -84,7 +91,7 @@ export const useUiStore = defineStore('ui', () => {
       // restart with new dialog
       _currentDialog = pickRandomDialog()
       _msgIndex = 0
-      const timer = setTimeout(() => _scheduleNextChatMessage(), 1500)
+      const timer = setTimeout(() => _scheduleNextChatMessage(toastId), 1500)
       _chatTimers.push(timer)
       return
     }
@@ -93,18 +100,15 @@ export const useUiStore = defineStore('ui', () => {
     const delay = _msgIndex === 0 ? 600 : 2000 + Math.random() * 1500
 
     const timer = setTimeout(() => {
-      // replace any existing loading toast with new message
-      toasts.value = toasts.value.filter((t) => t.type !== 'loading')
-
-      addToast({
-        id: `spy-${Date.now()}-${_msgIndex}`,
-        message: msg.text,
-        type: 'loading',
-        agent: msg.agent,
-      })
+      // update existing toast in place — no remove/add
+      const existing = toasts.value.find((t) => t.id === toastId)
+      if (existing) {
+        existing.agent = msg.agent
+        existing.message = msg.text
+      }
 
       _msgIndex++
-      _scheduleNextChatMessage()
+      _scheduleNextChatMessage(toastId)
     }, delay)
     _chatTimers.push(timer)
   }
