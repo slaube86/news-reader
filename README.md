@@ -1,93 +1,93 @@
 # Iran News Reader
 
-Ein leichter, responsiver Web-Reader für Iran-bezogene Nachrichten aus verschiedenen RSS-Feeds. Diese App wurde von Sebastian Laube umgesetzt und lädt Inhalte direkt aus den Quellen; sie speichert keine eigenen Nachrichten, sondern aggregiert und filtert nur vorhandene Feeds.
+A lightweight, responsive web reader for Iran-related news from various RSS feeds. Built by Sebastian Laube, this app loads content directly from the sources — it does not store its own articles but aggregates and filters existing feeds.
 
-## Tech-Stack
+## Tech Stack
 
-| Technologie | Version | Zweck |
-|-------------|---------|-------|
-| Vue 3 | 3.5 | UI-Framework (Composition API, `<script setup>`) |
-| Vite | 8.0 | Dev-Server & Build-Tool |
-| Pinia | 3.0 | State Management |
-| Vue Router | 4.6 | Routing (vorbereitet für spätere Erweiterung) |
-| TypeScript | 5.9 | Typsicherheit |
-| ESLint | 10.1 | Linting (Flat Config mit `eslint-plugin-vue` + `typescript-eslint`) |
-| Cloudflare Workers | — | CORS-Proxy & Farsi→Deutsch Übersetzung (Workers AI) |
-| IndexedDB | — | Offline-Speicherung der Artikel (60 Tage) |
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Vue 3 | 3.5 | UI framework (Composition API, `<script setup>`) |
+| Vite | 8.0 | Dev server & build tool |
+| Pinia | 3.0 | State management |
+| Vue Router | 4.6 | Routing (prepared for future expansion) |
+| TypeScript | 5.9 | Type safety |
+| ESLint | 10.1 | Linting (flat config with `eslint-plugin-vue` + `typescript-eslint`) |
+| Cloudflare Workers | — | CORS proxy & Farsi→German translation (Workers AI) |
+| IndexedDB | — | Offline article storage (60 days) |
 
 ## Features
 
-- Unterstützt 13 Quellen: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA).
-- Filter per Quelle, Stichwortsuche, Sortierung (Datum/Quelle).
-- Auto-Refresh alle 15 Minuten mit Countdown-Anzeige.
-- Mobile Sidebar mit Slide-in/Slide-out, Overlay und automatischem Schließen.
-- Sidebar gruppiert nach Sprache: 🇩🇪 Deutsch → 🇮🇷 Persisch → 🇺🇸 Amerikanisch → 🌐 Sonstige.
-- Übersetzung persischer Artikel via Cloudflare Workers AI (m2m100-Modell).
-- Toast-Benachrichtigungen für Ladezustand, Erfolg und Fehler.
-- Offline-Unterstützung über IndexedDB.
+- Supports 13 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA).
+- Filter by source, keyword search, sorting (date/source).
+- Auto-refresh every 15 minutes with countdown display.
+- Mobile sidebar with slide-in/slide-out, overlay, and auto-close.
+- Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → 🌐 Other.
+- Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
+- Toast notifications for loading state, success, and errors.
+- Offline support via IndexedDB.
 
-## Projektstruktur
+## Project Structure
 
 ```
 news-reader/
-├── index.html                 # Vite Entry Point
-├── vite.config.ts             # Vite-Konfiguration (Vue-Plugin, @/-Alias)
+├── index.html                 # Vite entry point
+├── vite.config.ts             # Vite config (Vue plugin, @/ alias)
 ├── tsconfig.json              # TypeScript strict mode
-├── eslint.config.js           # ESLint Flat Config
+├── eslint.config.js           # ESLint flat config
 ├── package.json
 ├── src/
-│   ├── main.ts                # App-Bootstrap (Vue, Pinia, Router, CSS)
-│   ├── App.vue                # Root-Komponente (Layout, Startup-Logik)
-│   ├── env.d.ts               # Vite/Vue Typ-Deklarationen
+│   ├── main.ts                # App bootstrap (Vue, Pinia, Router, CSS)
+│   ├── App.vue                # Root component (layout, startup logic)
+│   ├── env.d.ts               # Vite/Vue type declarations
 │   ├── router/
-│   │   └── index.ts           # Vue Router Setup
+│   │   └── index.ts           # Vue Router setup
 │   ├── stores/
-│   │   ├── articles.ts        # Artikel-State (Filter, Sortierung, IndexedDB)
-│   │   ├── feeds.ts           # Feed-Fetching (Batched, Retry, Fehler)
-│   │   └── ui.ts              # UI-State (Sidebar, Toasts, Loading)
+│   │   ├── articles.ts        # Article state (filtering, sorting, IndexedDB)
+│   │   ├── feeds.ts           # Feed fetching (batched, retry, errors)
+│   │   └── ui.ts              # UI state (sidebar, toasts, loading)
 │   ├── components/
-│   │   ├── TopBar.vue         # Header mit Logo, Countdown, Refresh
-│   │   ├── SideBar.vue        # Quellen-Navigation + Suche
-│   │   ├── SourceItem.vue     # Einzelne Quelle in der Sidebar
-│   │   ├── SidebarOverlay.vue # Mobile Overlay
-│   │   ├── StatsBar.vue       # Artikel/Quellen/Heute Statistiken
-│   │   ├── ArticleList.vue    # Artikel-Rendering (chronologisch/gruppiert)
-│   │   ├── ArticleCard.vue    # Einzelner Artikel mit Übersetzen-Button
-│   │   ├── LoadingState.vue   # Lade-/Leer-/Offline-Zustand
-│   │   └── ToastNotification.vue  # Toast-System
+│   │   ├── TopBar.vue         # Header with logo, countdown, refresh
+│   │   ├── SideBar.vue        # Source navigation + search
+│   │   ├── SourceItem.vue     # Individual source in the sidebar
+│   │   ├── SidebarOverlay.vue # Mobile overlay
+│   │   ├── StatsBar.vue       # Articles/sources/today statistics
+│   │   ├── ArticleList.vue    # Article rendering (chronological/grouped)
+│   │   ├── ArticleCard.vue    # Single article with translate button
+│   │   ├── LoadingState.vue   # Loading/empty/offline state
+│   │   └── ToastNotification.vue  # Toast system
 │   ├── composables/
-│   │   ├── useAutoRefresh.ts  # 15-Min Auto-Refresh mit Countdown
-│   │   ├── useFeedFetcher.ts  # HTTP-Fetch mit Retry, Backoff, Fallback-Proxy
-│   │   ├── useIndexedDB.ts    # IndexedDB CRUD + Pruning
-│   │   └── useTranslation.ts  # Farsi→Deutsch via Workers AI
+│   │   ├── useAutoRefresh.ts  # 15-min auto-refresh with countdown
+│   │   ├── useFeedFetcher.ts  # HTTP fetch with retry, backoff, fallback proxy
+│   │   ├── useIndexedDB.ts    # IndexedDB CRUD + pruning
+│   │   └── useTranslation.ts  # Farsi→German via Workers AI
 │   ├── config/
-│   │   ├── feeds.ts           # 13 Feed-Definitionen + Farsi-Quellen
-│   │   ├── iranTerms.ts       # 47 Iran-Keywords (DE/EN/FA)
-│   │   └── constants.ts       # Proxy-URLs, DB-Config, Timings
+│   │   ├── feeds.ts           # 13 feed definitions + Farsi sources
+│   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
+│   │   └── constants.ts       # Proxy URLs, DB config, timings
 │   ├── types/
-│   │   ├── article.ts         # Article Interface
-│   │   ├── feed.ts            # FeedConfig Interface
-│   │   └── toast.ts           # Toast Interface
+│   │   ├── article.ts         # Article interface
+│   │   ├── feed.ts            # FeedConfig interface
+│   │   └── toast.ts           # Toast interface
 │   ├── utils/
-│   │   ├── formatters.ts      # Datum/Zeit-Formatierung (de-DE)
+│   │   ├── formatters.ts      # Date/time formatting (de-DE)
 │   │   ├── helpers.ts         # hashCode, escapeHtml, isIranRelated
-│   │   └── xmlParser.ts       # RSS/Atom XML-Parsing + Iran-Filter
+│   │   └── xmlParser.ts       # RSS/Atom XML parsing + Iran filter
 │   └── assets/
 │       └── styles/
-│           ├── variables.css      # CSS Custom Properties (Dark Theme)
-│           ├── base.css           # Reset, Body, Scrollbar
-│           ├── layout.css         # Header, Sidebar, Main, Articles, Toasts
-│           ├── source-colors.css  # Farbcodes pro Quelle (Tags + Dots)
-│           ├── transitions.css    # Vue Transition-Klassen
-│           └── responsive.css     # Mobile Breakpoint (640px)
+│           ├── variables.css      # CSS custom properties (dark theme)
+│           ├── base.css           # Reset, body, scrollbar
+│           ├── layout.css         # Header, sidebar, main, articles, toasts
+│           ├── source-colors.css  # Color codes per source (tags + dots)
+│           ├── transitions.css    # Vue transition classes
+│           └── responsive.css     # Mobile breakpoint (640px)
 └── worker/
-    ├── worker.js              # Cloudflare Worker (CORS-Proxy + Übersetzung)
-    └── wrangler.toml          # Worker-Konfiguration
+    ├── worker.js              # Cloudflare Worker (CORS proxy + translation)
+    └── wrangler.toml          # Worker configuration
 ```
 
-## Einrichten
+## Getting Started
 
-### Voraussetzungen
+### Prerequisites
 
 - Node.js ≥ 18
 - npm ≥ 9
@@ -107,37 +107,37 @@ npm run dev
 # → http://localhost:5173/
 ```
 
-### Weitere Befehle
+### Available Commands
 
-| Befehl | Beschreibung |
-|--------|-------------|
-| `npm run dev` | Vite Dev-Server mit Hot Module Replacement |
-| `npm run build` | TypeScript-Check + Produktions-Build nach `dist/` |
-| `npm run preview` | Build-Vorschau lokal servieren |
-| `npm run lint` | ESLint über `src/` ausführen |
-| `npm run type-check` | TypeScript-Typprüfung ohne Build |
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Vite dev server with Hot Module Replacement |
+| `npm run build` | TypeScript check + production build to `dist/` |
+| `npm run preview` | Serve production build locally |
+| `npm run lint` | Run ESLint on `src/` |
+| `npm run type-check` | TypeScript type check without build |
 
-## Architektur
+## Architecture
 
 ### Cloudflare Worker (`worker/`)
 
-Die App nutzt einen eigenen Cloudflare Worker als CORS-Proxy und Übersetzungsdienst:
+The app uses a custom Cloudflare Worker as a CORS proxy and translation service:
 
-- **RSS-Proxy** (`GET /?url=...`): Leitet RSS-Feed-Requests weiter, mit Allowlist (nur bekannte Feed-Domains), Cloudflare Cache (5 Min TTL) und CORS-Headern.
-- **Übersetzung** (`POST /translate`): Übersetzt persische Texte ins Deutsche via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Lange Texte werden automatisch in Chunks aufgeteilt.
-- **Fallback**: Wenn der eigene Worker nicht erreichbar ist, fällt die App automatisch auf `allorigins.win` als Backup-Proxy zurück.
+- **RSS Proxy** (`GET /?url=...`): Forwards RSS feed requests with an allowlist (known feed domains only), Cloudflare Cache (5 min TTL), and CORS headers.
+- **Translation** (`POST /translate`): Translates Persian text to German via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Long texts are automatically split into chunks.
+- **Fallback**: If the custom worker is unavailable, the app automatically falls back to `allorigins.win` as a backup proxy.
 
 ### Client (Vue 3 SPA)
 
-- **State Management**: Drei Pinia Stores (`articles`, `feeds`, `ui`) mit klarer Trennung.
-- **Feed-Loading**: Feeds werden in Batches von 4 geladen (500 ms Pause) — reduziert Proxy-Last.
-- **Retry-Logik**: Exponential Backoff (1 s → 3 s) und 429-Handling mit Retry-After.
-- **Offline**: Artikel werden in IndexedDB gespeichert und nach 60 Tagen automatisch bereinigt.
-- **CSS**: Globales CSS (kein Scoped) mit CSS Custom Properties für ein durchgängiges Dark Theme.
+- **State Management**: Three Pinia stores (`articles`, `feeds`, `ui`) with clear separation of concerns.
+- **Feed Loading**: Feeds are loaded in batches of 4 (500 ms pause between batches) to reduce proxy load.
+- **Retry Logic**: Exponential backoff (1 s → 3 s) and 429 handling with Retry-After.
+- **Offline**: Articles are stored in IndexedDB and automatically pruned after 60 days.
+- **CSS**: Global CSS (not scoped) with CSS custom properties for a consistent dark theme.
 
-### Cloudflare Worker deployen (optional)
+### Deploying the Cloudflare Worker (optional)
 
-Der Worker ist bereits unter `rss-cors-proxy.sebastian-laube.workers.dev` deployed. Um ihn selbst zu deployen:
+The worker is already deployed at `rss-cors-proxy.sebastian-laube.workers.dev`. To deploy it yourself:
 
 ```bash
 npm install -g wrangler
@@ -146,23 +146,23 @@ cd worker
 wrangler deploy
 ```
 
-Danach die Worker-URL in `src/config/constants.ts` bei `PROXY_PRIMARY` anpassen.
+Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 
-## Verwendung
+## Usage
 
-- Quelle in der Seitenleiste wählen (z. B. Iran International oder Tagesschau).
-- Auf `Aktualisieren` klicken, um manuell nach neuen Artikeln zu suchen.
-- Suchfeld für Keyword-Filter verwenden.
-- Sortierung nach Datum oder Quelle einstellen.
-- Bei persischen Artikeln auf „Übersetzen" klicken für eine automatische Übersetzung.
-- Artikel werden automatisch in IndexedDB gespeichert (offline verfügbar).
+- Select a source in the sidebar (e.g. Iran International or Tagesschau).
+- Click `Aktualisieren` (Refresh) to manually fetch new articles.
+- Use the search field for keyword filtering.
+- Switch sorting between date and source.
+- For Persian articles, click "Übersetzen" (Translate) for automatic translation.
+- Articles are automatically saved to IndexedDB (available offline).
 
-## Hinweise
+## Notes
 
-- CORS-Proxy: Eigener Cloudflare Worker mit Allowlist als primärer Proxy, `allorigins.win` als Fallback.
-- Übersetzung: Cloudflare Workers AI (Free Tier: 10.000 Neurons/Tag).
-- Bei Ausfall einzelner Feeds zeigt die App Fehlerdetails in der Sidebar an.
+- CORS Proxy: Custom Cloudflare Worker with allowlist as primary proxy, `allorigins.win` as fallback.
+- Translation: Cloudflare Workers AI (free tier: 10,000 neurons/day).
+- If individual feeds fail, the app displays error details in the sidebar.
 
-## Lizenz
+## License
 
-Dieses Projekt ist Open Source und kann frei kopiert, angepasst und verteilt werden.
+This project is open source and can be freely copied, modified, and distributed.
