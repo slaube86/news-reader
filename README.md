@@ -23,7 +23,8 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 - Mobile sidebar with slide-in/slide-out, overlay, and auto-close.
 - Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → 🌐 Other.
 - Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
-- Toast notifications for loading state, success, and errors.
+- **Spy Chat loading animation**: While feeds load for the first time, an encrypted agent chat (8 randomized dialog pairs like FALKE/SCHAKAL, ADLER/KOBRA, etc.) simulates realistic intelligence communication with typing indicators and timed message bubbles.
+- **Spy Chat toast notifications**: During background refreshes (when articles are already visible), agent chat messages appear as compact toast bubbles (max 2 stacked) in the bottom-right corner. On initial load (no articles yet), a simple "Feeds werden geladen… (X s)" counter is shown instead.
 - Offline support via IndexedDB.
 
 ## Project Structure
@@ -63,7 +64,8 @@ news-reader/
 │   ├── config/
 │   │   ├── feeds.ts           # 13 feed definitions + Farsi sources
 │   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
-│   │   └── constants.ts       # Proxy URLs, DB config, timings
+│   │   ├── constants.ts       # Proxy URLs, DB config, timings
+│   │   └── spyDialogs.ts     # 8 randomized agent chat dialogs
 │   ├── types/
 │   │   ├── article.ts         # Article interface
 │   │   ├── feed.ts            # FeedConfig interface
