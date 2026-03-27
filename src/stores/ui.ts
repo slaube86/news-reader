@@ -93,11 +93,8 @@ export const useUiStore = defineStore('ui', () => {
     const delay = _msgIndex === 0 ? 600 : 2000 + Math.random() * 1500
 
     const timer = setTimeout(() => {
-      // keep max 2 toasts
-      const loadingToasts = toasts.value.filter((t) => t.type === 'loading')
-      if (loadingToasts.length >= 2) {
-        toasts.value = toasts.value.filter((t) => t.id !== loadingToasts[0].id)
-      }
+      // replace any existing loading toast with new message
+      toasts.value = toasts.value.filter((t) => t.type !== 'loading')
 
       addToast({
         id: `spy-${Date.now()}-${_msgIndex}`,

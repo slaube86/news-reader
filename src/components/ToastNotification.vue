@@ -8,7 +8,12 @@
         :class="{ 'toast-spy': toast.agent, 'toast-regular': !toast.agent }"
       >
         <template v-if="toast.agent">
-          <span class="toast-agent">{{ toast.agent }}</span>
+          <div class="toast-spy-header">
+            <span class="toast-agent">{{ toast.agent }}</span>
+            <span class="toast-spy-loader">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+          </div>
           <span class="toast-spy-text">{{ toast.message }}</span>
         </template>
         <template v-else>
@@ -62,12 +67,40 @@ const { toasts } = storeToRefs(ui)
   gap: 3px;
 }
 
+.toast-spy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .toast-agent {
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--accent2);
+}
+
+.toast-spy-loader {
+  display: flex;
+  gap: 3px;
+}
+
+.toast-spy-loader .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent2);
+  opacity: 0.5;
+  animation: toast-dot-bounce 1.2s infinite ease-in-out;
+}
+
+.toast-spy-loader .dot:nth-child(2) { animation-delay: 0.2s; }
+.toast-spy-loader .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes toast-dot-bounce {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.2); }
 }
 
 .toast-spy-text {
