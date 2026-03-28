@@ -37,7 +37,7 @@ export const useFeedsStore = defineStore('feeds', () => {
     const articles = useArticlesStore()
     const ui = useUiStore()
 
-    ui.showLoadingToast(articles.allItems.length > 0)
+    ui.showLoadingToast(articles.filteredItems.length > 0)
     ui.isLoadingFeeds = true
 
     try {
@@ -72,7 +72,7 @@ export const useFeedsStore = defineStore('feeds', () => {
     const ui = useUiStore()
 
     ui.isLoadingFeeds = true
-    ui.showLoadingToast(articles.allItems.length > 0)
+    ui.showLoadingToast(articles.filteredItems.length > 0)
 
     const results: PromiseSettledResult<Awaited<ReturnType<typeof fetchFeed>>>[] = []
     for (let i = 0; i < feeds.value.length; i += BATCH_SIZE) {
