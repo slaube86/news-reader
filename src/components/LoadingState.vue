@@ -1,10 +1,5 @@
 <template>
   <div v-if="loading" class="spy-chat-container">
-    <div class="spy-chat-header">
-      <span class="spy-lock">🔒</span>
-      VERSCHLÜSSELTER KANAL — AES-256
-      <span class="spy-status">● AKTIV</span>
-    </div>
     <div class="spy-chat-body">
       <TransitionGroup name="msg">
         <div
@@ -111,104 +106,74 @@ onUnmounted(cleanup)
 <style>
 /* Spy Chat */
 .spy-chat-container {
-  max-width: 520px;
-  margin: 2rem auto;
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  background: var(--bg2);
+  margin: 3rem auto;
   overflow: hidden;
   font-family: var(--mono);
 }
 
-.spy-chat-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: rgba(200, 57, 43, 0.12);
-  border-bottom: 1px solid var(--border);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--text2);
-}
-
-.spy-lock { font-size: 14px; }
-
-.spy-status {
-  margin-left: auto;
-  color: var(--green);
-  font-size: 10px;
-  animation: blink 2s ease-in-out infinite;
-}
-
 .spy-chat-body {
-  padding: 16px;
-  min-height: 220px;
-  max-height: 340px;
+  padding: 12px 0;
+  min-height: 180px;
+  max-height: 300px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .spy-msg {
   display: flex;
   flex-direction: column;
-  max-width: 85%;
+  max-width: 80%;
 }
 
 .msg-left { align-self: flex-start; }
 .msg-right { align-self: flex-end; align-items: flex-end; }
 
 .spy-agent {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--text3);
-  margin-bottom: 3px;
-  padding: 0 4px;
+  margin-bottom: 2px;
+  padding: 0 2px;
 }
 
 .spy-bubble {
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
   line-height: 1.5;
-  color: var(--text);
+  color: var(--text2);
 }
 
 .msg-left .spy-bubble {
-  background: rgba(255, 255, 255, 0.06);
-  border-bottom-left-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .msg-right .spy-bubble {
-  background: rgba(200, 57, 43, 0.15);
-  border-bottom-right-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .spy-typing {
   display: flex;
   flex-direction: column;
-  max-width: 85%;
+  max-width: 80%;
   align-self: flex-start;
 }
 
 .typing-dots {
   display: flex;
   gap: 4px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  border-bottom-left-radius: 2px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
 }
 
 .typing-dots span {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--text3);
   animation: typing-bounce 1.4s ease-in-out infinite;
@@ -218,27 +183,27 @@ onUnmounted(cleanup)
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes typing-bounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-4px); opacity: 1; }
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-3px); opacity: 0.8; }
 }
 
 .spy-chat-footer {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 10px 2px;
   border-top: 1px solid var(--border);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text3);
 }
 
 .spy-loader {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--accent);
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--border2);
+  border-top-color: var(--text3);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 /* Message transitions */

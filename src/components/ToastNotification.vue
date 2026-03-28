@@ -57,9 +57,7 @@ const { toasts } = storeToRefs(ui)
 }
 
 .toast-spy {
-  background: rgba(20, 20, 20, 0.97);
-  border: 1px solid var(--border2);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.04);
   padding: 8px 12px;
   font-family: var(--mono);
   display: flex;
@@ -78,7 +76,7 @@ const { toasts } = storeToRefs(ui)
   font-weight: 600;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: var(--accent2);
+  color: var(--text3);
 }
 
 .toast-spy-loader {
@@ -90,9 +88,9 @@ const { toasts } = storeToRefs(ui)
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--accent2);
+  background: var(--text3);
   opacity: 0.5;
-  animation: toast-dot-bounce 1.2s infinite ease-in-out;
+  animation: toast-dot-bounce 1.4s infinite ease-in-out;
 }
 
 .toast-spy-loader .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -100,7 +98,7 @@ const { toasts } = storeToRefs(ui)
 
 @keyframes toast-dot-bounce {
   0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1.2); }
+  40% { opacity: 0.8; transform: scale(1.1); }
 }
 
 .toast-spy-text {

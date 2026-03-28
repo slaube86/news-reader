@@ -32,17 +32,6 @@ export const SPY_DIALOGS: SpyDialog[] = [
     ],
   },
   {
-    agents: ['PHOENIX', 'SPHINX'],
-    messages: [
-      { agent: 'PHOENIX', text: 'Operativer Kanal aktiv. Frequenz gesichert.' },
-      { agent: 'SPHINX', text: 'Roger. Habe 13 Quellen im Monitoring. Beginne systematische Abfrage.' },
-      { agent: 'PHOENIX', text: 'Priorität auf Farsi-Quellen. Entekhab und Mehr News zuerst.' },
-      { agent: 'SPHINX', text: 'Farsi-Feeds erfasst. Übersetzungsmodul wird initialisiert.' },
-      { agent: 'PHOENIX', text: 'Al Jazeera und Iran International liefern. Verschlüsselung intakt.' },
-      { agent: 'SPHINX', text: 'Letzte Validierung läuft. Dossier wird zusammengestellt…' },
-    ],
-  },
-  {
     agents: ['WOLF', 'RABE'],
     messages: [
       { agent: 'WOLF', text: 'Hier Außenstelle. Signalstärke optimal. Beginne Lauschvorgang.' },
@@ -51,17 +40,6 @@ export const SPY_DIALOGS: SpyDialog[] = [
       { agent: 'RABE', text: 'Deutsche Quellen werden parallel abgegriffen. Tagesschau, Spiegel, ZDF, Zeit.' },
       { agent: 'WOLF', text: 'Amerikanische Kanäle angebunden. NPR-Verbindung hergestellt.' },
       { agent: 'RABE', text: 'Aggregate stehen. Dekompilierung der Nachrichten beginnt…' },
-    ],
-  },
-  {
-    agents: ['CONDOR', 'VIPER'],
-    messages: [
-      { agent: 'CONDOR', text: 'Nachtschicht übernommen. Alle Systeme operational.' },
-      { agent: 'VIPER', text: 'Guten Abend, Condor. Cache von 23:00 UTC wird aufgelöst.' },
-      { agent: 'CONDOR', text: 'Neue Datensätze verfügbar. Iran International sendet auf allen Frequenzen.' },
-      { agent: 'VIPER', text: 'Bestätigt. Washington Post und NYTimes haben Updates. Extrahiere relevante Segmente.' },
-      { agent: 'CONDOR', text: 'Mastodon-Kanal von NetBlocks zeigt keine Anomalien. Netzwerk stabil.' },
-      { agent: 'VIPER', text: 'Alle Quellen synchronisiert. Erstelle finale Zusammenstellung…' },
     ],
   },
   {
@@ -75,26 +53,83 @@ export const SPY_DIALOGS: SpyDialog[] = [
       { agent: 'LUCHS', text: 'Aufbereitung abgeschlossen. Übertragung der Ergebnisse läuft…' },
     ],
   },
+  // --- Farsi dialogs ---
   {
-    agents: ['GEIER', 'SKORPION'],
+    agents: ['شاهین', 'عقاب'],
     messages: [
-      { agent: 'GEIER', text: 'Operative Leitstelle aktiv. HUMINT-Kanäle gesichert.' },
-      { agent: 'SKORPION', text: 'Feldbericht: Quellen im Persischen Golf liefern zuverlässig.' },
-      { agent: 'GEIER', text: 'ZDF und Tagesschau bestätigen Berichtslage. Korrelation wird geprüft.' },
-      { agent: 'SKORPION', text: 'Entekhab-Feed dekodiert. 47 Schlüsselbegriffe werden abgeglichen.' },
-      { agent: 'GEIER', text: 'Fallback-Proxy wurde nicht benötigt. Primärkanal stabil.' },
-      { agent: 'SKORPION', text: 'Informationsverdichtung läuft. Lagebild wird generiert…' },
+      { agent: 'شاهین', text: 'کانال امن برقرار شد. شروع دریافت اطلاعات.' },
+      { agent: 'عقاب', text: 'تأیید می‌کنم. منابع فارسی آنلاین هستند. استخراج آغاز شد.' },
+      { agent: 'شاهین', text: 'فید بی‌بی‌سی فارسی دریافت شد. سیگنال‌های جدید در حال پردازش.' },
+      { agent: 'عقاب', text: 'منابع خبرگزاری مهر رمزگشایی شدند. ترجمه در حال انجام.' },
+      { agent: 'شاهین', text: 'داده‌های انتخاب و ایران اینترنشنال دریافت شد.' },
+      { agent: 'عقاب', text: 'تحلیل کلیدواژه‌ها تکمیل شد. گزارش نهایی آماده می‌شود…' },
     ],
   },
   {
-    agents: ['HABICHT', 'MAMBA'],
+    agents: ['پلنگ', 'کبرا'],
     messages: [
-      { agent: 'HABICHT', text: 'Chiffriermaschine synchronisiert. Kanal Delta-7 steht.' },
-      { agent: 'MAMBA', text: 'Eingehende Telemetrie aus 4 Zeitzonen. Beginne Sichtung.' },
-      { agent: 'HABICHT', text: 'Mehr News und BBC Persian senden verschlüsselt. Decoder aktiv.' },
-      { agent: 'MAMBA', text: 'US-Quellen bestätigen Lageentwicklung. Kreuzreferenz wird erstellt.' },
-      { agent: 'HABICHT', text: 'IndexedDB-Archiv wird aktualisiert. Alte Datensätze bereinigt.' },
-      { agent: 'MAMBA', text: 'Nachrichtenpool gefüllt. Bereite Übergabe an Analyst vor…' },
+      { agent: 'پلنگ', text: 'ایستگاه تهران به مرکز. ارتباط برقرار است.' },
+      { agent: 'کبرا', text: 'مرکز تأیید می‌کند. سیزده منبع تحت نظارت قرار دارند.' },
+      { agent: 'پلنگ', text: 'اولویت با منابع فارسی. مهر نیوز و انتخاب در صدر.' },
+      { agent: 'کبرا', text: 'فیدهای فارسی ضبط شدند. ماژول ترجمه فعال شد.' },
+      { agent: 'پلنگ', text: 'الجزیره و ایران اینترنشنال اطلاعات ارسال می‌کنند.' },
+      { agent: 'کبرا', text: 'آخرین بررسی در جریان است. پرونده تنظیم می‌شود…' },
+    ],
+  },
+  {
+    agents: ['ققنوس', 'افعی'],
+    messages: [
+      { agent: 'ققنوس', text: 'شیفت شبانه آغاز شد. تمام سیستم‌ها عملیاتی هستند.' },
+      { agent: 'افعی', text: 'سلام ققنوس. حافظه نهان ساعت ۲۳ پاکسازی شد.' },
+      { agent: 'ققنوس', text: 'داده‌های جدید موجود است. بی‌بی‌سی فارسی روی همه فرکانس‌ها.' },
+      { agent: 'افعی', text: 'واشنگتن پست و نیویورک تایمز به‌روز شدند. بخش‌های مرتبط استخراج می‌شوند.' },
+      { agent: 'ققنوس', text: 'نت‌بلاکس هیچ اختلالی گزارش نکرده. شبکه پایدار است.' },
+      { agent: 'افعی', text: 'همه منابع همگام‌سازی شدند. گردآوری نهایی در حال انجام…' },
+    ],
+  },
+  // --- English dialogs ---
+  {
+    agents: ['HAWK', 'JACKAL'],
+    messages: [
+      { agent: 'HAWK', text: 'Channel secured. Initiating source reconnaissance.' },
+      { agent: 'JACKAL', text: 'Copy that. BBC Persian and Mehr News are online. Extraction underway.' },
+      { agent: 'HAWK', text: 'Tagesschau feed intercepted. Processing new signals.' },
+      { agent: 'JACKAL', text: 'Persian sources being decoded. Decryption in progress.' },
+      { agent: 'HAWK', text: 'Spiegel and ZDF delivering data. Bandwidth stable.' },
+      { agent: 'JACKAL', text: 'Iran keyword analysis complete. Compiling briefing…' },
+    ],
+  },
+  {
+    agents: ['EAGLE', 'COBRA'],
+    messages: [
+      { agent: 'EAGLE', text: 'Berlin station to Tehran station. Confirm reception.' },
+      { agent: 'COBRA', text: 'Reception confirmed. All sensors active. Ready for transmission.' },
+      { agent: 'EAGLE', text: 'Routing data packets from western sources. NYTimes, WashPost acquired.' },
+      { agent: 'COBRA', text: 'Packets received. Cross-referencing with local sources.' },
+      { agent: 'EAGLE', text: 'NetBlocks reports no disruptions. All channels open.' },
+      { agent: 'COBRA', text: 'Data processing at 80%. Classification almost complete.' },
+    ],
+  },
+  {
+    agents: ['RAVEN', 'VIPER'],
+    messages: [
+      { agent: 'RAVEN', text: 'Night shift operational. All systems green.' },
+      { agent: 'VIPER', text: 'Good evening, Raven. Flushing 23:00 UTC cache.' },
+      { agent: 'RAVEN', text: 'New datasets available. Iran International broadcasting on all frequencies.' },
+      { agent: 'VIPER', text: 'Confirmed. Washington Post and NYTimes have updates. Extracting relevant segments.' },
+      { agent: 'RAVEN', text: 'NetBlocks Mastodon channel shows no anomalies. Network stable.' },
+      { agent: 'VIPER', text: 'All sources synchronized. Preparing final compilation…' },
+    ],
+  },
+  {
+    agents: ['PHANTOM', 'SPHINX'],
+    messages: [
+      { agent: 'PHANTOM', text: 'Division 7 to outpost east. Cryptographic handshake complete.' },
+      { agent: 'SPHINX', text: 'Outpost east reports ready. 13 feeds queued for processing.' },
+      { agent: 'PHANTOM', text: 'Initiating batch processing. Four simultaneous channels open.' },
+      { agent: 'SPHINX', text: 'Chunks being processed. Farsi texts routed through M2M module.' },
+      { agent: 'PHANTOM', text: 'Zeit Online and Spiegel report new situation assessments.' },
+      { agent: 'SPHINX', text: 'Processing complete. Transmitting results…' },
     ],
   },
 ]
