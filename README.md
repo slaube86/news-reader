@@ -11,6 +11,7 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 | Pinia | 3.0 | State management |
 | Vue Router | 4.6 | Routing (prepared for future expansion) |
 | TypeScript | 5.9 | Type safety |
+| Leaflet.js | 1.9 | Interactive world map with heatmap markers |
 | ESLint | 10.1 | Linting (flat config with `eslint-plugin-vue` + `typescript-eslint`) |
 | Cloudflare Workers | — | CORS proxy & Farsi→German translation (Workers AI) |
 | IndexedDB | — | Offline article storage (60 days) |
@@ -23,7 +24,8 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 - Mobile sidebar with slide-in/slide-out, overlay, and auto-close.
 - Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → 🌐 Other.
 - Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
-- **Spy Chat loading animation**: While feeds load for the first time, an encrypted agent chat (8 randomized dialog pairs like FALKE/SCHAKAL, ADLER/KOBRA, etc.) simulates realistic intelligence communication with typing indicators and timed message bubbles.
+- **Interactive World Map**: Toggle map view via "🗺️ Karte" button. Displays an interactive Leaflet.js map with circle markers sized by article count per country. 45 countries with multilingual keyword detection (German, English, Farsi). Sidebar shows country list with article counts; clicking a country flies the map to its location and shows a detail panel with source breakdown and article links.
+- **Spy Chat loading animation**: While feeds load for the first time, an encrypted agent chat (11 randomized dialog pairs in German, Farsi, and English) simulates realistic intelligence communication with typing indicators and timed message bubbles.
 - **Spy Chat toast notifications**: During background refreshes (when articles are already visible), agent chat messages appear as compact toast bubbles (max 2 stacked) in the bottom-right corner. On initial load (no articles yet), a simple "Feeds werden geladen… (X s)" counter is shown instead.
 - Offline support via IndexedDB.
 
@@ -47,7 +49,7 @@ news-reader/
 │   │   ├── feeds.ts           # Feed fetching (batched, retry, errors)
 │   │   └── ui.ts              # UI state (sidebar, toasts, loading)
 │   ├── components/
-│   │   ├── TopBar.vue         # Header with logo, countdown, refresh
+│   │   ├── TopBar.vue         # Header with logo, countdown, refresh, map toggle
 │   │   ├── SideBar.vue        # Source navigation + search
 │   │   ├── SourceItem.vue     # Individual source in the sidebar
 │   │   ├── SidebarOverlay.vue # Mobile overlay
@@ -55,6 +57,7 @@ news-reader/
 │   │   ├── ArticleList.vue    # Article rendering (chronological/grouped)
 │   │   ├── ArticleCard.vue    # Single article with translate button
 │   │   ├── LoadingState.vue   # Loading/empty/offline state
+│   │   ├── MapView.vue        # Interactive Leaflet.js world map with country sidebar
 │   │   └── ToastNotification.vue  # Toast system
 │   ├── composables/
 │   │   ├── useAutoRefresh.ts  # 15-min auto-refresh with countdown
@@ -65,7 +68,8 @@ news-reader/
 │   │   ├── feeds.ts           # 13 feed definitions + Farsi sources
 │   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
 │   │   ├── constants.ts       # Proxy URLs, DB config, timings
-│   │   └── spyDialogs.ts     # 8 randomized agent chat dialogs
+│   │   ├── countries.ts       # 45 countries with multilingual terms + coordinates
+│   │   └── spyDialogs.ts     # 11 randomized agent chat dialogs (DE/FA/EN)
 │   ├── types/
 │   │   ├── article.ts         # Article interface
 │   │   ├── feed.ts            # FeedConfig interface
@@ -73,6 +77,7 @@ news-reader/
 │   ├── utils/
 │   │   ├── formatters.ts      # Date/time formatting (de-DE)
 │   │   ├── helpers.ts         # hashCode, escapeHtml, isIranRelated
+│   │   ├── countryDetector.ts # Article→country matching + stats aggregation
 │   │   └── xmlParser.ts       # RSS/Atom XML parsing + Iran filter
 │   └── assets/
 │       └── styles/
@@ -156,6 +161,7 @@ Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 - Click `Aktualisieren` (Refresh) to manually fetch new articles.
 - Use the search field for keyword filtering.
 - Switch sorting between date and source.
+- Click `🗺️ Karte` to open the interactive world map showing which countries are mentioned in the news. The sidebar lists countries by article count; click a country for details.
 - For Persian articles, click "Übersetzen" (Translate) for automatic translation.
 - Articles are automatically saved to IndexedDB (available offline).
 
