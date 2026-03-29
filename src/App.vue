@@ -2,10 +2,16 @@
   <TopBar
     :last-updated="lastUpdated"
     :countdown-display="countdownDisplay"
+    :show-map="showMap"
     @refresh="loadAll"
+    @toggle-map="showMap = !showMap"
   />
 
-  <div class="layout">
+  <div v-if="showMap" class="layout">
+    <MapView @close="showMap = false" />
+  </div>
+
+  <div v-else class="layout">
     <SidebarOverlay />
     <SideBar />
 
@@ -36,11 +42,13 @@ import SidebarOverlay from '@/components/SidebarOverlay.vue'
 import StatsBar from '@/components/StatsBar.vue'
 import ArticleList from '@/components/ArticleList.vue'
 import ToastNotification from '@/components/ToastNotification.vue'
+import MapView from '@/components/MapView.vue'
 
 const feedsStore = useFeedsStore()
 const articlesStore = useArticlesStore()
 
 const lastUpdated = ref('—')
+const showMap = ref(false)
 
 async function loadAll() {
   await feedsStore.fetchAllFeeds()

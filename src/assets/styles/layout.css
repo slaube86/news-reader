@@ -10,7 +10,7 @@
   height: 56px;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 9999;
 }
 .topbar-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 .logo {
@@ -58,6 +58,7 @@
 }
 .btn-refresh:hover { background: var(--bg3); color: var(--text); }
 .btn-refresh:disabled { opacity: .4; cursor: default; }
+.btn-refresh.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn-refresh .icon { display: inline-block; transition: transform .6s; }
 .btn-refresh.spinning .icon { animation: spin .6s linear; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -67,6 +68,11 @@
   display: flex;
   max-width: 1100px;
   margin: 0 auto;
+  min-height: calc(100vh - 56px);
+}
+
+.map-layout {
+  max-width: 100%;
   min-height: calc(100vh - 56px);
 }
 
