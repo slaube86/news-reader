@@ -299,6 +299,12 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.term-hit {
+  background: rgba(232, 84, 68, 0.25);
+  color: var(--accent2);
+  border-radius: 2px;
+  padding: 0 2px;
+}
 .art-translation {
   margin-top: 8px;
   padding: 8px;

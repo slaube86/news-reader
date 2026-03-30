@@ -8,21 +8,28 @@ export interface CountryHit {
   articles: Article[]
 }
 
-const termLookup: { term: string; country: CountryEntry }[] = []
+const isLatin = /^[a-z0-9\s\-äöüß]+$/
+
+const termLookup: { regex: RegExp; country: CountryEntry }[] = []
 for (const country of COUNTRIES) {
   for (const term of country.terms) {
-    termLookup.push({ term: term.toLowerCase(), country })
+    const lower = term.toLowerCase()
+    const escaped = lower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = isLatin.test(lower)
+      ? new RegExp(`\\b${escaped}\\b`, 'i')
+      : new RegExp(`(?<=^|[\\s.,،؛:!؟\\-«»"'()\\[\\]])${escaped}(?=$|[\\s.,،؛:!؟\\-«»"'()\\[\\]])`, 'i')
+    termLookup.push({ regex, country })
   }
 }
 
 export function detectCountries(article: Article): CountryEntry[] {
-  const text = `${article.title} ${article.desc}`.toLowerCase()
+  const text = `${article.title} ${article.desc}`
   const found = new Set<string>()
   const result: CountryEntry[] = []
 
-  for (const { term, country } of termLookup) {
+  for (const { regex, country } of termLookup) {
     if (found.has(country.code)) continue
-    if (text.includes(term)) {
+    if (regex.test(text)) {
       found.add(country.code)
       result.push(country)
     }
@@ -49,4 +56,28 @@ export function buildCountryStats(articles: Article[]): CountryHit[] {
   }
 
   return Array.from(map.values()).sort((a, b) => b.count - a.count)
+}
+
+export function highlightTerms(text: string, terms: string[]): string {
+  if (!terms.length || !text) return escapeHtml(text)
+
+  const patterns = terms.map((t) => {
+    const lower = t.toLowerCase()
+    const escaped = lower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    return isLatin.test(lower)
+      ? `\\b${escaped}\\b`
+      : `(?<=^|[\\s.,،؛:!؟\\-«»"'()\\[\\]])${escaped}(?=$|[\\s.,،؛:!؟\\-«»"'()\\[\\]])`
+  })
+
+  const combined = new RegExp(`(${patterns.join('|')})`, 'gi')
+  const safe = escapeHtml(text)
+  return safe.replace(combined, '<mark class="term-hit">$1</mark>')
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }

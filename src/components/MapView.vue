@@ -40,17 +40,12 @@
         </span>
       </div>
       <div class="detail-articles">
-        <a
+        <ArticleCard
           v-for="article in selectedCountry.articles.slice(0, 10)"
           :key="article.id"
-          :href="article.link"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="detail-article"
-        >
-          <span class="detail-article-source">{{ article.sourceName }}</span>
-          <span class="detail-article-title">{{ article.title }}</span>
-        </a>
+          :article="article"
+          :highlight="selectedCountry.country.terms"
+        />
         <span v-if="selectedCountry.articles.length > 10" class="detail-more">
           … und {{ selectedCountry.articles.length - 10 }} weitere
         </span>
@@ -65,6 +60,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useArticlesStore } from '@/stores/articles'
 import { buildCountryStats, type CountryHit } from '@/utils/countryDetector'
+import ArticleCard from '@/components/ArticleCard.vue'
 
 defineEmits<{ close: [] }>()
 
@@ -262,44 +258,6 @@ onUnmounted(() => {
 .detail-articles {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.detail-article {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  text-decoration: none;
-  padding: 3px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.detail-article:last-child {
-  border-bottom: none;
-}
-
-.detail-article:hover .detail-article-title {
-  color: var(--accent2);
-}
-
-.detail-article-source {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
-  min-width: 80px;
-}
-
-.detail-article-title {
-  font-size: 13px;
-  color: var(--text2);
-  line-height: 1.4;
-  transition: color 0.15s;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .detail-more {
