@@ -14,6 +14,8 @@ export const FEEDS: FeedConfig[] = [
   { id: 'bbcpersian', name: 'BBC Persian', url: 'https://www.bbc.com/persian/index.xml' },
   { id: 'aljazeera', name: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml' },
   { id: 'entekhab', name: 'Entekhab (FA)', url: 'https://www.entekhab.ir/fa/rss/allnews' },
+  { id: 'correctiv', name: 'CORRECTIV', url: 'https://correctiv.org/feed/' },
+  { id: 'bellingcat', name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/' },
 ]
 
 export const FARSI_SOURCES = ['bbcpersian', 'mehr', 'iranintl', 'entekhab'] as const

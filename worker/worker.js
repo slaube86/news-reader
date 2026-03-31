@@ -14,7 +14,9 @@ const ALLOWED_HOSTS = [
   'www.bbc.com',
   'www.iranintl.com',
   'www.aljazeera.com',
-  'www.entekhab.ir'
+  'www.entekhab.ir',
+  'correctiv.org',
+  'www.bellingcat.com'
 ];
 
 const CORS_HEADERS = {

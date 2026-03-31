@@ -11,6 +11,8 @@
 .tag-netblocks  { background: rgba(120,80,0,.25);    color: #f9bf74; }
 .tag-aljazeera  { background: rgba(210,150,0,.25);   color: #f5c842; }
 .tag-entekhab   { background: rgba(0,140,80,.25);    color: #5ee8a0; }
+.tag-correctiv  { background: rgba(0,100,170,.3);    color: #6ec4f0; }
+.tag-bellingcat { background: rgba(200,160,0,.3);    color: #f0d060; }
 .tag-default    { background: rgba(100,100,100,.2);  color: #aaa; }
 
 .dot-tagesschau { background: #7cc8e8; }
@@ -26,4 +28,6 @@
 .dot-iranintl   { background: #ff8fa0; }
 .dot-aljazeera  { background: #f5c842; }
 .dot-entekhab   { background: #5ee8a0; }
+.dot-correctiv  { background: #6ec4f0; }
+.dot-bellingcat { background: #f0d060; }
 .dot-default    { background: #888; }
