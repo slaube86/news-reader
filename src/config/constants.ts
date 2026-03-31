@@ -3,7 +3,7 @@ export const PROXY_FALLBACK = 'https://api.allorigins.win/raw?url=' as const
 export const TRANSLATE_URL = 'https://rss-cors-proxy.sebastian-laube.workers.dev/translate' as const
 
 export const DB_NAME = 'IranNewsReaderDB' as const
-export const DB_VERSION = 2
+export const DB_VERSION = 3
 export const STORE_NAME = 'savedArticles' as const
 
 export const BATCH_SIZE = 4

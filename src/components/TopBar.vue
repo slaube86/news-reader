@@ -9,14 +9,13 @@
       <span class="last-update">{{ lastUpdated }}</span>
     </div>
     <div class="topbar-row topbar-right">
-      <button class="btn-refresh btn-sidebar-toggle" @click="uiStore.toggleSidebar()">
+      <button class="btn-refresh btn-sidebar-toggle" :disabled="showMap" @click="uiStore.toggleSidebar()">
         <span class="icon">☰</span> Quellen
       </button>
       <span class="last-update" id="nextUpdate" style="margin-left:12px">{{ countdownDisplay }}</span>
       <button
         class="btn-refresh"
         :class="{ active: showMap }"
-        :disabled="uiStore.isLoadingFeeds"
         @click="$emit('toggleMap')"
       >
         <span class="icon">🗺️</span> Karte

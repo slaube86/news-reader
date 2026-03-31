@@ -1,10 +1,13 @@
 <template>
   <div>
     <LoadingState
-      v-if="articlesStore.filteredItems.length === 0"
-      :loading="uiStore.isLoadingFeeds"
-      :empty="!uiStore.isLoadingFeeds && articlesStore.allItems.length > 0"
-      :offline="!uiStore.isLoadingFeeds && articlesStore.allItems.length === 0"
+      v-if="articlesStore.filteredItems.length === 0 && uiStore.isLoadingFeeds"
+      :loading="true"
+    />
+    <LoadingState
+      v-else-if="articlesStore.filteredItems.length === 0"
+      :empty="articlesStore.allItems.length > 0"
+      :offline="articlesStore.allItems.length === 0"
     />
 
     <template v-else-if="articlesStore.sortMode === 'source'">

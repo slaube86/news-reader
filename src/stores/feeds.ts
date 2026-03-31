@@ -116,8 +116,7 @@ export const useFeedsStore = defineStore('feeds', () => {
         ui.showErrorToast('Keine Verbindung zu den Feeds', 5000)
       }
     } else {
-      const savedItems = await getSavedArticlesFromDB().catch(() => [])
-      articles.setItems(articles.mergeArticles(savedItems, fetchedItems))
+      articles.setItems(articles.mergeArticles(articles.allItems, fetchedItems))
       ui.showToast('Alle Quellen wurden aktualisiert')
       await articles.saveAndPrune()
     }

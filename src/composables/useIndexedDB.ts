@@ -1,4 +1,5 @@
 import type { Article } from '@/types/article'
+import { toRaw } from 'vue'
 import { DB_NAME, DB_VERSION, STORE_NAME } from '@/config/constants'
 
 let _dbInstance: IDBDatabase | null = null
@@ -83,7 +84,18 @@ export function saveArticlesToDB(articles: Article[]): Promise<void> {
       new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_NAME, 'readwrite')
         const store = tx.objectStore(STORE_NAME)
-        articles.forEach((article) => store.put(article))
+        articles.forEach((article) => {
+          const rawArticle = toRaw(article)
+          store.put({
+            id: rawArticle.id,
+            title: rawArticle.title,
+            desc: rawArticle.desc,
+            link: rawArticle.link,
+            date: rawArticle.date,
+            source: rawArticle.source,
+            sourceName: rawArticle.sourceName,
+          })
+        })
         tx.oncomplete = () => {
           console.info(`IndexedDB: ${articles.length} Artikel gespeichert`)
           resolve()
