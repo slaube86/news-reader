@@ -3,6 +3,8 @@ import { toRaw } from 'vue'
 import { DB_NAME, DB_VERSION, STORE_NAME } from '@/config/constants'
 
 let _dbInstance: IDBDatabase | null = null
+const OPEN_RETRY_DELAY_MS = 800
+const MAX_OPEN_RETRIES = 1
 
 // Alte DB "savedArticles" aufräumen (Überbleibsel früherer Version)
 try {
@@ -11,28 +13,68 @@ try {
   /* ignore */
 }
 
-function openDB(): Promise<IDBDatabase> {
+function resetDbConnection(reason: string) {
+  if (_dbInstance) {
+    try {
+      _dbInstance.close()
+    } catch {
+      /* ignore */
+    }
+  }
+  _dbInstance = null
+  console.warn(`IndexedDB: Verbindung zurückgesetzt (${reason})`, {
+    dbName: DB_NAME,
+    dbVersion: DB_VERSION,
+    storeName: STORE_NAME,
+  })
+}
+
+function openDB(retryCount = 0): Promise<IDBDatabase> {
   if (_dbInstance) {
     try {
       if (_dbInstance.objectStoreNames.contains(STORE_NAME)) {
         return Promise.resolve(_dbInstance)
       }
     } catch {
-      _dbInstance = null
+      resetDbConnection('ungueltige bestehende Verbindung')
     }
   }
 
   return new Promise((resolve, reject) => {
     let request: IDBOpenDBRequest
+    let settled = false
+    let retryTimer: ReturnType<typeof setTimeout> | null = null
+
+    const finalizeReject = (error: unknown) => {
+      if (settled) return
+      settled = true
+      if (retryTimer) clearTimeout(retryTimer)
+      reject(error)
+    }
+
+    const finalizeResolve = (db: IDBDatabase) => {
+      if (settled) return
+      settled = true
+      if (retryTimer) clearTimeout(retryTimer)
+      resolve(db)
+    }
+
     try {
       request = indexedDB.open(DB_NAME, DB_VERSION)
     } catch (e) {
       console.error('IndexedDB nicht verfügbar:', e)
-      return reject(e)
+      return finalizeReject(e)
     }
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result
+      console.info('IndexedDB: Upgrade gestartet', {
+        dbName: DB_NAME,
+        dbVersion: DB_VERSION,
+        storeName: STORE_NAME,
+        oldVersion: event.oldVersion,
+        newVersion: event.newVersion,
+      })
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' })
         console.info('IndexedDB: Object Store erstellt')
@@ -40,7 +82,22 @@ function openDB(): Promise<IDBDatabase> {
     }
 
     request.onblocked = () => {
-      console.warn('IndexedDB: Verbindung blockiert – andere Tabs schließen')
+      console.warn('IndexedDB: Verbindung blockiert', {
+        dbName: DB_NAME,
+        dbVersion: DB_VERSION,
+        storeName: STORE_NAME,
+        retryCount,
+        hint: 'Safari haelt manchmal alte Handles offen. Andere Tabs schliessen oder Browser neu starten.',
+      })
+      resetDbConnection('open blockiert')
+
+      if (retryCount < MAX_OPEN_RETRIES) {
+        retryTimer = setTimeout(() => {
+          openDB(retryCount + 1).then(finalizeResolve, finalizeReject)
+        }, OPEN_RETRY_DELAY_MS)
+      } else {
+        finalizeReject(new Error('IndexedDB blockiert: Bitte andere Tabs schliessen oder Safari neu starten'))
+      }
     }
 
     request.onsuccess = () => {
@@ -50,12 +107,12 @@ function openDB(): Promise<IDBDatabase> {
         db.close()
         const delReq = indexedDB.deleteDatabase(DB_NAME)
         delReq.onsuccess = () => {
-          _dbInstance = null
-          openDB().then(resolve, reject)
+          resetDbConnection('Store fehlte nach open')
+          openDB().then(finalizeResolve, finalizeReject)
         }
         delReq.onerror = () => {
           console.error('IndexedDB: DB löschen fehlgeschlagen')
-          reject(delReq.error)
+          finalizeReject(delReq.error)
         }
         return
       }
@@ -64,15 +121,35 @@ function openDB(): Promise<IDBDatabase> {
         _dbInstance = null
       }
       _dbInstance.onversionchange = () => {
-        _dbInstance?.close()
-        _dbInstance = null
+        resetDbConnection('versionchange')
       }
-      resolve(_dbInstance)
+      console.info('IndexedDB: Verbindung geöffnet', {
+        dbName: DB_NAME,
+        dbVersion: db.version,
+        storeName: STORE_NAME,
+        retryCount,
+      })
+      finalizeResolve(_dbInstance)
     }
 
     request.onerror = () => {
-      console.error('IndexedDB open Fehler:', request.error)
-      reject(request.error)
+      console.error('IndexedDB open Fehler:', {
+        error: request.error,
+        dbName: DB_NAME,
+        dbVersion: DB_VERSION,
+        storeName: STORE_NAME,
+        retryCount,
+      })
+
+      if (retryCount < MAX_OPEN_RETRIES) {
+        resetDbConnection('open Fehler')
+        retryTimer = setTimeout(() => {
+          openDB(retryCount + 1).then(finalizeResolve, finalizeReject)
+        }, OPEN_RETRY_DELAY_MS)
+        return
+      }
+
+      finalizeReject(request.error)
     }
   })
 }
@@ -97,15 +174,32 @@ export function saveArticlesToDB(articles: Article[]): Promise<void> {
           })
         })
         tx.oncomplete = () => {
-          console.info(`IndexedDB: ${articles.length} Artikel gespeichert`)
+          console.info('IndexedDB: Artikel gespeichert', {
+            count: articles.length,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
           resolve()
         }
         tx.onerror = () => {
-          console.error('IndexedDB save Fehler:', tx.error)
+          console.error('IndexedDB save Fehler:', {
+            error: tx.error,
+            count: articles.length,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
           reject(tx.error)
         }
         tx.onabort = () => {
-          console.error('IndexedDB save abgebrochen:', tx.error)
+          console.error('IndexedDB save abgebrochen:', {
+            error: tx.error,
+            count: articles.length,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
           reject(tx.error || new Error('Transaction aborted'))
         }
       }),
@@ -118,9 +212,22 @@ export function getSavedArticlesFromDB(): Promise<Article[]> {
       new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_NAME, 'readonly')
         const req = tx.objectStore(STORE_NAME).getAll()
-        req.onsuccess = () => resolve(req.result as Article[])
+        req.onsuccess = () => {
+          console.info('IndexedDB: Artikel gelesen', {
+            count: req.result.length,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
+          resolve(req.result as Article[])
+        }
         req.onerror = () => {
-          console.error('IndexedDB read Fehler:', req.error)
+          console.error('IndexedDB read Fehler:', {
+            error: req.error,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
           reject(req.error)
         }
       }),
@@ -146,9 +253,23 @@ export function removeOldArticlesFromDB(days: number = 60): Promise<void> {
             cursor.continue()
           }
         }
-        tx.oncomplete = () => resolve()
+        tx.oncomplete = () => {
+          console.info('IndexedDB: Alte Artikel bereinigt', {
+            cutoff,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
+          resolve()
+        }
         tx.onerror = () => {
-          console.error('IndexedDB prune Fehler:', tx.error)
+          console.error('IndexedDB prune Fehler:', {
+            error: tx.error,
+            cutoff,
+            dbName: DB_NAME,
+            dbVersion: db.version,
+            storeName: STORE_NAME,
+          })
           reject(tx.error)
         }
       }),
