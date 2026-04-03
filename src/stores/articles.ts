@@ -5,10 +5,12 @@ import { FEEDS } from '@/config/feeds'
 import { PRUNE_DAYS } from '@/config/constants'
 import { isToday } from '@/utils/formatters'
 import {
-  getSavedArticlesFromDB,
-  saveArticlesToDB,
-  removeOldArticlesFromDB,
-} from '@/composables/useIndexedDB'
+  initDB,
+  getAllArticlesFromDexie,
+  saveArticlesToDexie,
+  pruneOldArticles,
+  getArticleIds,
+} from '@/composables/useDexieDB'
 
 export const useArticlesStore = defineStore('articles', () => {
   const allItems = ref<Article[]>([])
@@ -74,40 +76,40 @@ export const useArticlesStore = defineStore('articles', () => {
 
   async function loadFromDB(): Promise<void> {
     try {
-      const items = await getSavedArticlesFromDB()
+      await initDB()
+      const items = await getAllArticlesFromDexie()
       savedArticleIds.value = new Set(items.map((i) => i.id))
       if (items.length) {
         allItems.value = items
       }
     } catch (e) {
-      console.error('IndexedDB: loadFromDB fehlgeschlagen:', e)
+      console.error('Dexie: loadFromDB fehlgeschlagen:', e)
       savedArticleIds.value = new Set()
     }
   }
 
   async function syncSavedArticleIds(): Promise<void> {
     try {
-      const items = await getSavedArticlesFromDB()
-      savedArticleIds.value = new Set(items.map((i) => i.id))
+      savedArticleIds.value = await getArticleIds()
     } catch (e) {
-      console.error('IndexedDB: syncSavedArticleIds fehlgeschlagen:', e)
+      console.error('Dexie: syncSavedArticleIds fehlgeschlagen:', e)
       savedArticleIds.value = new Set()
     }
   }
 
   async function saveAndPrune(): Promise<void> {
     try {
-      await saveArticlesToDB(allItems.value)
+      await saveArticlesToDexie(allItems.value)
       // Prune in memory
       const threshold = Date.now() - PRUNE_DAYS * 24 * 60 * 60 * 1000
       allItems.value = allItems.value.filter((item) => {
         const d = new Date(item.date)
         return isNaN(d.getTime()) || d.getTime() >= threshold
       })
-      await removeOldArticlesFromDB(PRUNE_DAYS)
+      await pruneOldArticles(PRUNE_DAYS)
       await syncSavedArticleIds()
     } catch (e) {
-      console.error('IndexedDB Fehler:', e)
+      console.error('Dexie Fehler:', e)
     }
   }
 

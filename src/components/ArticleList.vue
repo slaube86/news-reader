@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="listContainer">
     <LoadingState
       v-if="articlesStore.filteredItems.length === 0 && uiStore.isLoadingFeeds"
       :loading="true"
@@ -21,20 +21,77 @@
     </template>
 
     <div v-else class="feed-block">
-      <ArticleCard v-for="item in articlesStore.filteredItems" :key="item.id" :article="item" />
+      <ArticleCard v-for="item in visibleItems" :key="item.id" :article="item" />
+      <div v-if="hasMore" ref="sentinel" class="scroll-sentinel">
+        <span class="loading-more">Weitere Artikel laden…</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useUiStore } from '@/stores/ui'
+import { PAGE_SIZE } from '@/config/constants'
 import ArticleCard from '@/components/ArticleCard.vue'
 import LoadingState from '@/components/LoadingState.vue'
 
 const articlesStore = useArticlesStore()
 const uiStore = useUiStore()
+
+// ── Pagination State ──
+const displayCount = ref(PAGE_SIZE)
+const sentinel = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+
+const visibleItems = computed(() =>
+  articlesStore.filteredItems.slice(0, displayCount.value),
+)
+
+const hasMore = computed(() =>
+  displayCount.value < articlesStore.filteredItems.length,
+)
+
+function loadMore() {
+  if (hasMore.value) {
+    displayCount.value += PAGE_SIZE
+  }
+}
+
+// Reset bei Filter-/Source-Wechsel
+watch(
+  () => [articlesStore.currentSource, articlesStore.searchKeyword, articlesStore.sortMode],
+  () => {
+    displayCount.value = PAGE_SIZE
+  },
+)
+
+// ── Intersection Observer für Infinite Scroll ──
+function setupObserver() {
+  if (observer) observer.disconnect()
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting) loadMore()
+    },
+    { rootMargin: '200px' },
+  )
+}
+
+watch(sentinel, (el: HTMLElement | null) => {
+  if (el && observer) observer.observe(el)
+})
+
+onMounted(() => {
+  setupObserver()
+  nextTick(() => {
+    if (sentinel.value && observer) observer.observe(sentinel.value)
+  })
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+})
 
 interface SourceGroup {
   source: string
@@ -53,3 +110,16 @@ const groupedBySource = computed<SourceGroup[]>(() => {
   return Object.values(map)
 })
 </script>
+
+<style scoped>
+.scroll-sentinel {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.loading-more {
+  color: var(--color-text-muted, #888);
+  font-size: 0.85rem;
+}
+</style>

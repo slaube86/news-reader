@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { FEEDS } from '@/config/feeds'
-import { BATCH_SIZE } from '@/config/constants'
-import { fetchFeed } from '@/composables/useFeedFetcher'
-import { getSavedArticlesFromDB } from '@/composables/useIndexedDB'
+import { getAdaptiveBatchSize } from '@/config/constants'
+import { fetchFeed, fetchAllFromAggregator } from '@/composables/useFeedFetcher'
 import { useArticlesStore } from '@/stores/articles'
 import { useUiStore } from '@/stores/ui'
 import type { FeedConfig } from '@/types/feed'
@@ -74,13 +73,45 @@ export const useFeedsStore = defineStore('feeds', () => {
     ui.isLoadingFeeds = true
     ui.showLoadingToast(articles.filteredItems.length > 0)
 
+    // ── Versuch 1: Aggregator-Endpoint (1 Request statt 15) ──
+    const aggregated = await fetchAllFromAggregator()
+    if (aggregated) {
+      clearAllFeedErrors()
+      const allFetched = Object.entries(aggregated).flatMap(([feedId, items]) => {
+        if (items.length > 0) {
+          lastRefreshTimes.value[feedId] = new Date().toISOString()
+          clearFeedError(feedId)
+        } else {
+          const feed = feeds.value.find((f) => f.id === feedId)
+          if (feed) setFeedError(feedId, 'Keine passenden Iran-Artikel gefunden', 'info')
+        }
+        return items
+      })
+
+      if (allFetched.length > 0) {
+        articles.setItems(articles.mergeArticles(articles.allItems, allFetched))
+        ui.showToast('Alle Quellen wurden aktualisiert (Aggregator)')
+        await articles.saveAndPrune()
+        ui.isLoadingFeeds = false
+        ui.hideLoadingToast()
+        return
+      }
+    }
+
+    // ── Fallback: Adaptives Batching mit Einzelfetches ──
+    const batchSize = getAdaptiveBatchSize()
     const results: PromiseSettledResult<Awaited<ReturnType<typeof fetchFeed>>>[] = []
-    for (let i = 0; i < feeds.value.length; i += BATCH_SIZE) {
-      const batch = feeds.value.slice(i, i + BATCH_SIZE)
+
+    for (let i = 0; i < feeds.value.length; i += batchSize) {
+      const batch = feeds.value.slice(i, i + batchSize)
+      const batchStart = performance.now()
       const batchResults = await Promise.allSettled(batch.map(fetchFeed))
+      const batchDuration = performance.now() - batchStart
       results.push(...batchResults)
-      if (i + BATCH_SIZE < feeds.value.length) {
-        await new Promise((r) => setTimeout(r, 500))
+      if (i + batchSize < feeds.value.length) {
+        // Adaptiver Delay: min 200ms, max 2000ms, basierend auf Batch-Dauer
+        const delay = Math.min(2000, Math.max(200, batchDuration * 0.3))
+        await new Promise((r) => setTimeout(r, delay))
       }
     }
 
@@ -107,11 +138,9 @@ export const useFeedsStore = defineStore('feeds', () => {
     }
 
     if (!fetchedItems.length && errors.length === feeds.value.length) {
-      const savedItems = await getSavedArticlesFromDB().catch(() => [])
+      const savedItems = await articles.loadFromDB().then(() => articles.allItems).catch(() => [])
       if (savedItems.length) {
-        articles.setItems(savedItems)
-        await articles.syncSavedArticleIds()
-        ui.showToast('Offline-Modus: Artikel aus IndexedDB geladen')
+        ui.showToast('Offline-Modus: Artikel aus Datenbank geladen')
       } else {
         ui.showErrorToast('Keine Verbindung zu den Feeds', 5000)
       }
