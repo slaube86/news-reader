@@ -13,21 +13,24 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 | TypeScript | 5.9 | Type safety |
 | Leaflet.js | 1.9 | Interactive world map with heatmap markers |
 | ESLint | 10.1 | Linting (flat config with `eslint-plugin-vue` + `typescript-eslint`) |
-| Cloudflare Workers | — | CORS proxy & Farsi→German translation (Workers AI) |
-| IndexedDB | — | Offline article storage (60 days) |
+| Cloudflare Workers | — | CORS proxy, feed aggregator & Farsi→German translation (Workers AI) |
+| Dexie.js | 4.x | IndexedDB wrapper with indexes & typed queries |
+| IndexedDB | — | Offline article storage (60 days, via Dexie.js) |
 
 ## Features
 
-- Supports 13 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA).
+- Supports 15 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat.
 - Filter by source, keyword search, sorting (date/source).
 - Auto-refresh every 15 minutes with countdown display.
 - Mobile sidebar with slide-in/slide-out, overlay, and auto-close.
 - Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → 🌐 Other.
 - Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
+- **Infinite Scroll Pagination**: Articles load in pages of 50 with automatic loading via Intersection Observer.
 - **Interactive World Map**: Toggle map view via "🗺️ Karte" button. Displays an interactive Leaflet.js map with circle markers sized by article count per country. 45 countries with multilingual keyword detection (German, English, Farsi). Sidebar shows country list with article counts; clicking a country flies the map to its location and shows a detail panel with source breakdown and article links.
 - **Spy Chat loading animation**: While feeds load for the first time, an encrypted agent chat (11 randomized dialog pairs in German, Farsi, and English) simulates realistic intelligence communication with typing indicators and timed message bubbles.
 - **Spy Chat toast notifications**: During background refreshes (when articles are already visible), agent chat messages appear as compact toast bubbles (max 2 stacked) in the bottom-right corner. On initial load (no articles yet), a simple "Feeds werden geladen… (X s)" counter is shown instead.
-- Offline support via IndexedDB.
+- Offline support via Dexie.js (IndexedDB with indexes on `date`, `source`, `[date+source]`).
+- Automatic one-time migration from legacy IndexedDB to Dexie.js.
 
 ## Project Structure
 
@@ -61,13 +64,14 @@ news-reader/
 │   │   └── ToastNotification.vue  # Toast system
 │   ├── composables/
 │   │   ├── useAutoRefresh.ts  # 15-min auto-refresh with countdown
-│   │   ├── useFeedFetcher.ts  # HTTP fetch with retry, backoff, fallback proxy
-│   │   ├── useIndexedDB.ts    # IndexedDB CRUD + pruning
+│   │   ├── useDexieDB.ts      # Dexie.js storage with indexes, pagination, migration
+│   │   ├── useFeedFetcher.ts  # Parallel proxy fetch, ETag cache, aggregator
+│   │   ├── useIndexedDB.ts    # Legacy IndexedDB (kept for migration)
 │   │   └── useTranslation.ts  # Farsi→German via Workers AI
 │   ├── config/
 │   │   ├── feeds.ts           # 13 feed definitions + Farsi sources
 │   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
-│   │   ├── constants.ts       # Proxy URLs, DB config, timings
+│   │   ├── constants.ts       # Proxy URLs, DB config, timings, adaptive batching
 │   │   ├── countries.ts       # 45 countries with multilingual terms + coordinates
 │   │   └── spyDialogs.ts     # 11 randomized agent chat dialogs (DE/FA/EN)
 │   ├── types/
@@ -87,8 +91,10 @@ news-reader/
 │           ├── source-colors.css  # Color codes per source (tags + dots)
 │           ├── transitions.css    # Vue transition classes
 │           └── responsive.css     # Mobile breakpoint (640px)
+├── notes/
+│   └── PERFORMANCE-PLAN.md    # Performance optimization plan
 └── worker/
-    ├── worker.js              # Cloudflare Worker (CORS proxy + translation)
+    ├── worker.js              # Cloudflare Worker (CORS proxy, aggregator, rate-limiting, translation)
     └── wrangler.toml          # Worker configuration
 ```
 
@@ -128,18 +134,22 @@ npm run dev
 
 ### Cloudflare Worker (`worker/`)
 
-The app uses a custom Cloudflare Worker as a CORS proxy and translation service:
+The app uses a custom Cloudflare Worker as a CORS proxy, feed aggregator, and translation service:
 
-- **RSS Proxy** (`GET /?url=...`): Forwards RSS feed requests with an allowlist (known feed domains only), Cloudflare Cache (5 min TTL), and CORS headers.
+- **RSS Proxy** (`GET /?url=...`): Forwards RSS feed requests with an allowlist (known feed domains only), Cloudflare Cache (5 min TTL), CORS headers, and ETag/Last-Modified passthrough for conditional requests.
+- **Feed Aggregator** (`GET /feeds/all`): Fetches all 15 feeds in parallel server-side, parses XML to JSON, filters for Iran-related articles, and returns a single cached response. Reduces client requests from 15 to 1.
 - **Translation** (`POST /translate`): Translates Persian text to German via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Long texts are automatically split into chunks.
-- **Fallback**: If the custom worker is unavailable, the app automatically falls back to `allorigins.win` as a backup proxy.
+- **Rate-Limiting**: IP-based throttling (60 requests/minute) to prevent abuse.
 
 ### Client (Vue 3 SPA)
 
 - **State Management**: Three Pinia stores (`articles`, `feeds`, `ui`) with clear separation of concerns.
-- **Feed Loading**: Feeds are loaded in batches of 4 (500 ms pause between batches) to reduce proxy load.
-- **Retry Logic**: Exponential backoff (1 s → 3 s) and 429 handling with Retry-After.
-- **Offline**: Articles are stored in IndexedDB and automatically pruned after 60 days.
+- **Feed Loading**: Tries aggregator endpoint first (1 request for all feeds). Falls back to adaptive batching (batch size 1–8 based on `navigator.connection`) with dynamic inter-batch delays.
+- **Parallel Proxy Fetching**: `Promise.any()` races primary worker and allorigins fallback — the faster proxy wins.
+- **ETag/Last-Modified Cache**: Conditional requests avoid re-downloading unchanged feeds.
+- **Storage**: Dexie.js (IndexedDB wrapper) with indexes on `date`, `source`, and compound `[date+source]` for efficient queries and pruning. Auto-migrates from legacy IndexedDB.
+- **Pagination**: Infinite scroll with Intersection Observer, loading 50 articles per page.
+- **Offline**: Articles are stored via Dexie.js and automatically pruned after 60 days.
 - **CSS**: Global CSS (not scoped) with CSS custom properties for a consistent dark theme.
 
 ### Deploying the Cloudflare Worker (optional)
@@ -163,12 +173,14 @@ Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 - Switch sorting between date and source.
 - Click `🗺️ Karte` to open the interactive world map showing which countries are mentioned in the news. The sidebar lists countries by article count; click a country for details.
 - For Persian articles, click "Übersetzen" (Translate) for automatic translation.
-- Articles are automatically saved to IndexedDB (available offline).
+- Articles are automatically saved via Dexie.js (available offline).
 
 ## Notes
 
-- CORS Proxy: Custom Cloudflare Worker with allowlist as primary proxy, `allorigins.win` as fallback.
+- CORS Proxy: Custom Cloudflare Worker with allowlist as primary proxy, `allorigins.win` as fallback. Both are raced in parallel.
+- Feed Aggregator: Worker endpoint `/feeds/all` loads all feeds server-side in one request.
 - Translation: Cloudflare Workers AI (free tier: 10,000 neurons/day).
+- Rate-Limiting: Worker limits each IP to 60 requests per minute.
 - If individual feeds fail, the app displays error details in the sidebar.
 
 ## License
