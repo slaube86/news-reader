@@ -14,21 +14,21 @@
       <DailySummary v-if="articlesStore.currentSource === 'today'" />
 
       <template v-if="articlesStore.sortMode === 'source'">
-      <div v-for="group in groupedBySource" :key="group.source" class="feed-block">
-        <div class="feed-header">
-          <span class="feed-name">{{ group.name }}</span>
-          <span class="feed-count">{{ group.items.length }} Artikel</span>
+        <div v-for="group in groupedBySource" :key="group.source" class="feed-block">
+          <div class="feed-header">
+            <span class="feed-name">{{ group.name }}</span>
+            <span class="feed-count">{{ group.items.length }} Artikel</span>
+          </div>
+          <ArticleCard v-for="item in group.items" :key="item.id" :article="item" />
         </div>
-        <ArticleCard v-for="item in group.items" :key="item.id" :article="item" />
-      </div>
-    </template>
+      </template>
 
-    <div v-else class="feed-block">
-      <ArticleCard v-for="item in visibleItems" :key="item.id" :article="item" />
-      <div v-if="hasMore" ref="sentinel" class="scroll-sentinel">
-        <span class="loading-more">Weitere Artikel laden…</span>
+      <div v-else class="feed-block">
+        <ArticleCard v-for="item in visibleItems" :key="item.id" :article="item" />
+        <div v-if="hasMore" ref="sentinel" class="scroll-sentinel">
+          <span class="loading-more">Weitere Artikel laden…</span>
+        </div>
       </div>
-    </div>
     </template>
   </div>
 </template>
