@@ -10,7 +10,10 @@
       :offline="articlesStore.allItems.length === 0"
     />
 
-    <template v-else-if="articlesStore.sortMode === 'source'">
+    <template v-else>
+      <DailySummary v-if="articlesStore.currentSource === 'today'" />
+
+      <template v-if="articlesStore.sortMode === 'source'">
       <div v-for="group in groupedBySource" :key="group.source" class="feed-block">
         <div class="feed-header">
           <span class="feed-name">{{ group.name }}</span>
@@ -26,6 +29,7 @@
         <span class="loading-more">Weitere Artikel laden…</span>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -35,6 +39,7 @@ import { useArticlesStore } from '@/stores/articles'
 import { useUiStore } from '@/stores/ui'
 import { PAGE_SIZE } from '@/config/constants'
 import ArticleCard from '@/components/ArticleCard.vue'
+import DailySummary from '@/components/DailySummary.vue'
 import LoadingState from '@/components/LoadingState.vue'
 
 const articlesStore = useArticlesStore()

@@ -14,6 +14,25 @@ export const REFRESH_SECONDS = 900 // 15 Minuten in Sekunden
 export const PRUNE_DAYS = 60
 export const PAGE_SIZE = 50
 
+export const STOPWORDS: Set<string> = new Set([
+  // Deutsch
+  'der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einer', 'einem', 'einen',
+  'und', 'oder', 'aber', 'als', 'auch', 'auf', 'aus', 'bei', 'bis', 'für', 'mit',
+  'nach', 'von', 'vor', 'zu', 'zum', 'zur', 'über', 'unter', 'durch', 'gegen',
+  'nicht', 'noch', 'nur', 'sich', 'wie', 'wird', 'hat', 'ist', 'sind', 'war',
+  'mehr', 'neue', 'neuer', 'neues', 'neuem', 'neuen', 'will', 'soll', 'kann',
+  'im', 'in', 'es', 'so', 'um', 'am', 'an', 'ob', 'ab',
+  // Englisch
+  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of',
+  'with', 'by', 'from', 'is', 'are', 'was', 'were', 'be', 'been', 'has', 'have',
+  'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
+  'not', 'no', 'its', 'it', 'this', 'that', 'as', 'how', 'what', 'who', 'which',
+  'his', 'her', 'he', 'she', 'they', 'their', 'our', 'we', 'you', 'your',
+  'up', 'out', 'about', 'into', 'over', 'after', 'new', 'says', 'said',
+  // Farsi (häufige Kurzwörter)
+  'و', 'در', 'به', 'از', 'که', 'با', 'را', 'این', 'آن', 'یک', 'بر', 'تا', 'هم',
+])
+
 /** Adaptive Batch-Size basierend auf Netzwerkqualität */
 export function getAdaptiveBatchSize(): number {
   const conn = (navigator as unknown as { connection?: { effectiveType?: string } }).connection
