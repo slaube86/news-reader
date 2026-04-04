@@ -17,7 +17,7 @@ export const useArticlesStore = defineStore('articles', () => {
   const savedArticleIds = ref<Set<string>>(new Set())
   const currentSource = ref('today')
   const searchKeyword = ref('')
-  const sortMode = ref<'date' | 'source'>('date')
+  const sortMode = ref<'date' | 'dateAsc' | 'source'>('date')
 
   const filteredItems = computed(() => {
     let items: Article[]
@@ -42,6 +42,8 @@ export const useArticlesStore = defineStore('articles', () => {
 
     if (sortMode.value === 'date') {
       items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    } else if (sortMode.value === 'dateAsc') {
+      items.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     } else {
       items.sort(
         (a, b) =>

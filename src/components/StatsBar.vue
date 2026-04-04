@@ -16,6 +16,7 @@
     </div>
     <select v-model="articlesStore.sortMode" class="sort-select">
       <option value="date">Neueste zuerst</option>
+      <option value="dateAsc">Älteste zuerst</option>
       <option value="source">Nach Quelle</option>
     </select>
   </div>
