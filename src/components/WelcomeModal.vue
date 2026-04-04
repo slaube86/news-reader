@@ -10,14 +10,14 @@
           <div class="modal-body">
             <span class="typewriter-text">{{ displayedText }}</span>
             <span v-if="isTyping" class="typewriter-cursor">|</span>
-            <p v-if="!isTyping" class="github-line">
+            <p class="github-line">
               {{ t('welcome.github') }}
               <a href="https://github.com/slaube86/news-reader" target="_blank" rel="noopener">GitHub</a>
               {{ t('welcome.githubSuffix') }}
             </p>
           </div>
 
-          <div v-show="!isTyping" class="modal-footer">
+          <div class="modal-footer">
             <label class="modal-checkbox">
               <input v-model="dontShowAgain" type="checkbox" />
               <span>{{ t('welcome.dontShow') }}</span>
