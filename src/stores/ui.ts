@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { Toast } from '@/types/toast'
 import { pickRandomDialog } from '@/config/spyDialogs'
 import type { SpyDialog } from '@/config/spyDialogs'
+import { useI18n } from '@/composables/useI18n'
 
 export const useUiStore = defineStore('ui', () => {
   const sidebarOpen = ref(false)
@@ -67,9 +68,10 @@ export const useUiStore = defineStore('ui', () => {
       _scheduleNextChatMessage(spyToastId)
     } else {
       const toastId = `loading-${Date.now()}`
+      const { t: translate } = useI18n()
       addToast({
         id: toastId,
-        message: 'Feeds werden geladen… (0 s)',
+        message: translate('ui.loadingFeeds', { n: 0 }),
         type: 'loading',
       })
       if (_loadingTimer) clearInterval(_loadingTimer)
@@ -77,7 +79,7 @@ export const useUiStore = defineStore('ui', () => {
         const seconds = Math.floor((Date.now() - (_loadingStart || Date.now())) / 1000)
         const existing = toasts.value.find((t) => t.id === toastId)
         if (existing) {
-          existing.message = `Feeds werden geladen… (${seconds} s)`
+          existing.message = translate('ui.loadingFeeds', { n: seconds })
         }
       }, 1000)
     }

@@ -21,13 +21,8 @@
     </main>
   </div>
 
-  <footer class="disclaimer">
-    &copy; 2026 - Dieses Webprojekt wurde von Sebastian Laube umgesetzt.
-    Inhalte werden über Aggregierte RSS-Feeds geladen; sie stammen nicht von mir
-    und unterliegen den jeweiligen Medienquellen.
-  </footer>
-
   <ToastNotification />
+  <WelcomeModal />
 </template>
 
 <script setup lang="ts">
@@ -43,6 +38,7 @@ import StatsBar from '@/components/StatsBar.vue'
 import ArticleList from '@/components/ArticleList.vue'
 import ToastNotification from '@/components/ToastNotification.vue'
 import MapView from '@/components/MapView.vue'
+import WelcomeModal from '@/components/WelcomeModal.vue'
 
 const feedsStore = useFeedsStore()
 const articlesStore = useArticlesStore()

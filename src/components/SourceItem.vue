@@ -10,7 +10,7 @@
       v-if="hasRefresh"
       class="src-refresh-btn"
       :class="{ loading: uiStore.isLoadingFeeds }"
-      :title="`${label} aktualisieren`"
+      :title="t('source.refresh', { name: label })"
       @click.stop="feedsStore.refreshSource(sourceId)"
     >↻</button>
     <span v-if="feedError" class="src-feed-error" :title="feedError.message">
@@ -25,6 +25,9 @@ import { computed } from 'vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useFeedsStore } from '@/stores/feeds'
 import { useUiStore } from '@/stores/ui'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   sourceId: string

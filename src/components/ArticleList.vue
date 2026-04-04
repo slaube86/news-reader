@@ -17,7 +17,7 @@
         <div v-for="group in groupedBySource" :key="group.source" class="feed-block">
           <div class="feed-header">
             <span class="feed-name">{{ group.name }}</span>
-            <span class="feed-count">{{ group.items.length }} Artikel</span>
+            <span class="feed-count">{{ group.items.length }} {{ t('list.articles') }}</span>
           </div>
           <ArticleCard v-for="item in group.items" :key="item.id" :article="item" />
         </div>
@@ -26,7 +26,7 @@
       <div v-else class="feed-block">
         <ArticleCard v-for="item in visibleItems" :key="item.id" :article="item" />
         <div v-if="hasMore" ref="sentinel" class="scroll-sentinel">
-          <span class="loading-more">Weitere Artikel laden…</span>
+          <span class="loading-more">{{ t('list.loadMore') }}</span>
         </div>
       </div>
     </template>
@@ -37,6 +37,7 @@
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useUiStore } from '@/stores/ui'
+import { useI18n } from '@/composables/useI18n'
 import { PAGE_SIZE } from '@/config/constants'
 import ArticleCard from '@/components/ArticleCard.vue'
 import DailySummary from '@/components/DailySummary.vue'
@@ -44,6 +45,7 @@ import LoadingState from '@/components/LoadingState.vue'
 
 const articlesStore = useArticlesStore()
 const uiStore = useUiStore()
+const { t } = useI18n()
 
 // ── Pagination State ──
 const displayCount = ref(PAGE_SIZE)

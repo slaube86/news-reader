@@ -1,15 +1,15 @@
 <template>
   <div v-if="totalCount > 0" class="daily-summary" :class="{ collapsed }">
     <button class="summary-toggle" @click="toggle">
-      <span class="summary-title">Daily Recap</span>
-      <span class="summary-meta">{{ totalCount }} Artikel · {{ sourceCount }} Quellen</span>
+      <span class="summary-title">{{ t('summary.title') }}</span>
+      <span class="summary-meta">{{ totalCount }} {{ t('summary.articles') }} · {{ sourceCount }} {{ t('summary.sources') }}</span>
       <span class="chevron" :class="{ open: !collapsed }">▸</span>
     </button>
 
     <div v-show="!collapsed" class="summary-body">
       <!-- Top-Quellen -->
       <section class="summary-section">
-        <h4 class="section-label">Top-Quellen</h4>
+        <h4 class="section-label">{{ t('summary.topSources') }}</h4>
         <div class="chips">
           <span
             v-for="s in sourceRanking"
@@ -22,7 +22,7 @@
 
       <!-- Erwähnte Länder -->
       <section v-if="countryStats.length" class="summary-section">
-        <h4 class="section-label">Erwähnte Länder</h4>
+        <h4 class="section-label">{{ t('summary.countries') }}</h4>
         <div class="country-list">
           <div v-for="hit in countryStats" :key="hit.country.code" class="country-row">
             <img
@@ -39,7 +39,7 @@
 
       <!-- Trending-Begriffe -->
       <section v-if="trendingKeywords.length" class="summary-section">
-        <h4 class="section-label">Trending</h4>
+        <h4 class="section-label">{{ t('summary.trending') }}</h4>
         <div class="chips">
           <span
             v-for="kw in trendingKeywords"
@@ -52,7 +52,7 @@
 
       <!-- Zeitverlauf -->
       <section class="summary-section">
-        <h4 class="section-label">Zeitverlauf</h4>
+        <h4 class="section-label">{{ t('summary.timeline') }}</h4>
         <div class="time-bars">
           <div v-for="slot in timeDistribution" :key="slot.label" class="time-slot">
             <span class="time-label">{{ slot.label }}</span>
@@ -70,6 +70,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useDailySummary } from '@/composables/useDailySummary'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const STORAGE_KEY = 'dailySummaryCollapsed'
 const AVAILABLE_FLAGS = ['de', 'us', 'ir', 'globe']

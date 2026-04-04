@@ -21,24 +21,27 @@
     </div>
     <div class="spy-chat-footer">
       <div class="spy-loader"></div>
-      <span>Feeds werden geladen…</span>
+      <span>{{ t('loading.feeds') }}</span>
     </div>
   </div>
   <div v-else-if="empty" class="state-box">
     <span class="icon">📭</span>
-    <p>Keine Artikel gefunden</p>
-    <small>Versuche es erneut oder ändere den Filter</small>
+    <p>{{ t('loading.noArticles') }}</p>
+    <small>{{ t('loading.tryAgain') }}</small>
   </div>
   <div v-else-if="offline" class="state-box">
     <span class="icon">⚠</span>
-    <p>Keine Verbindung zu den Feeds</p>
-    <small>Internetverbindung prüfen und erneut versuchen</small>
+    <p>{{ t('loading.offline') }}</p>
+    <small>{{ t('loading.checkConnection') }}</small>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue'
 import { type SpyChatMessage, type SpyDialog, SPY_DIALOGS, pickRandomDialog } from '@/config/spyDialogs'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   loading?: boolean

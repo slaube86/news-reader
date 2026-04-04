@@ -1,6 +1,6 @@
 <template>
   <nav class="sidebar map-sidebar">
-    <div class="sidebar-section-label">Länder</div>
+    <div class="sidebar-section-label">{{ t('map.countries') }}</div>
     <ul class="src-list">
       <li
         class="src-item"
@@ -8,7 +8,7 @@
         @click="selectCountry(null)"
       >
         <span class="src-dot" style="background: #888"></span>
-        Alle Länder
+        {{ t('map.allCountries') }}
         <span class="src-count">{{ countryStats.length }}</span>
       </li>
       <li
@@ -31,7 +31,7 @@
     <div v-if="selectedCountry" class="map-detail">
       <div class="detail-header">
         <h3>{{ selectedCountry.country.name }}</h3>
-        <span class="detail-count">{{ selectedCountry.count }} Artikel</span>
+        <span class="detail-count">{{ selectedCountry.count }} {{ t('map.articles') }}</span>
         <button class="detail-close" @click="selectCountry(null)">✕</button>
       </div>
       <div class="detail-sources">
@@ -47,7 +47,7 @@
           :highlight="selectedCountry.country.terms"
         />
         <span v-if="selectedCountry.articles.length > 10" class="detail-more">
-          … und {{ selectedCountry.articles.length - 10 }} weitere
+          {{ t('map.andMore', { n: selectedCountry.articles.length - 10 }) }}
         </span>
       </div>
     </div>
@@ -60,7 +60,10 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useArticlesStore } from '@/stores/articles'
 import { buildCountryStats, type CountryHit } from '@/utils/countryDetector'
+import { useI18n } from '@/composables/useI18n'
 import ArticleCard from '@/components/ArticleCard.vue'
+
+const { t } = useI18n()
 
 defineEmits<{ close: [] }>()
 
@@ -119,7 +122,7 @@ function renderMarkers() {
     })
 
     marker.bindTooltip(
-      `<strong>${hit.country.name}</strong><br>${hit.count} Artikel`,
+      `<strong>${hit.country.name}</strong><br>${hit.count} ${t('map.articles')}`,
       { direction: 'top', offset: [0, -radius] },
     )
 

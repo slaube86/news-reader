@@ -1,13 +1,15 @@
 import { ref, onUnmounted } from 'vue'
 import { REFRESH_SECONDS, REFRESH_INTERVAL } from '@/config/constants'
 import { formatTime } from '@/utils/formatters'
+import { useI18n } from '@/composables/useI18n'
 
 export function useAutoRefresh(loadAllFn: () => Promise<void>) {
+  const { t } = useI18n()
   const nextRefreshSeconds = ref(REFRESH_SECONDS)
-  const countdownDisplay = ref(`nächstes Update in: ${formatTime(REFRESH_SECONDS)}`)
+  const countdownDisplay = ref(`${t('refresh.next')}${formatTime(REFRESH_SECONDS)}`)
 
   function updateDisplay() {
-    countdownDisplay.value = `nächstes Update in: ${formatTime(nextRefreshSeconds.value)}`
+    countdownDisplay.value = `${t('refresh.next')}${formatTime(nextRefreshSeconds.value)}`
   }
 
   function startCountdown() {

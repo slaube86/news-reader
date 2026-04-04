@@ -1,9 +1,9 @@
 <template>
   <nav class="sidebar" :class="{ active: uiStore.sidebarOpen }">
-    <div class="sidebar-section-label">Quellen</div>
+    <div class="sidebar-section-label">{{ t('sidebar.sources') }}</div>
     <ul class="src-list">
-      <SourceItem source-id="all" label="Alle Quellen" dot-color="#888" />
-      <SourceItem source-id="today" label="Heute" dot-color="#f59e0b" />
+      <SourceItem source-id="all" :label="t('sidebar.allSources')" dot-color="#888" />
+      <SourceItem source-id="today" :label="t('sidebar.today')" dot-color="#f59e0b" />
     </ul>
 
     <div v-for="group in groups" :key="group.key" class="src-group">
@@ -25,21 +25,28 @@
     </div>
 
     <div class="keyword-section">
-      <div class="sidebar-section-label" style="margin-bottom:8px">Suche</div>
+      <div class="sidebar-section-label" style="margin-bottom:8px">{{ t('sidebar.search') }}</div>
       <input
         v-model="articlesStore.searchKeyword"
         class="keyword-input"
         type="text"
-        placeholder="Stichwort…"
+        :placeholder="t('sidebar.placeholder')"
       >
+    </div>
+
+    <div class="sidebar-disclaimer">
+      <p>&copy; 2026 Sebastian Laube</p>
+      <p>{{ t('sidebar.disclaimer') }}</p>
+      <p><a href="https://github.com/slaube86/news-reader" target="_blank" rel="noopener">GitHub</a></p>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useArticlesStore } from '@/stores/articles'
 import { useUiStore } from '@/stores/ui'
+import { useI18n } from '@/composables/useI18n'
 import SourceItem from '@/components/SourceItem.vue'
 import flagDe from '@/assets/icons/flags/de.svg'
 import flagIr from '@/assets/icons/flags/ir.svg'
@@ -48,27 +55,35 @@ import flagGlobe from '@/assets/icons/flags/globe.svg'
 
 const articlesStore = useArticlesStore()
 const uiStore = useUiStore()
+const { t } = useI18n()
+
+// Mobile: Sidebar automatisch schließen bei Feed-Wechsel
+watch(() => articlesStore.currentSource, () => {
+  if (window.innerWidth <= 640) {
+    uiStore.toggleSidebar(false)
+  }
+})
 
 const groups = [
-  { key: 'de', label: 'Deutsch', icon: flagDe, feeds: [
+  { key: 'de', label: t('sidebar.groupDe'), icon: flagDe, feeds: [
     { id: 'tagesschau', label: 'Tagesschau' },
     { id: 'spiegel', label: 'Spiegel' },
     { id: 'zdf', label: 'ZDF' },
     { id: 'zeit', label: 'Zeit Online' },
   ]},
-  { key: 'ir', label: 'Persisch', icon: flagIr, feeds: [
+  { key: 'ir', label: t('sidebar.groupIr'), icon: flagIr, feeds: [
     { id: 'iranintl', label: 'Iran International' },
     { id: 'aljazeera', label: 'Al Jazeera' },
     { id: 'mehr', label: 'Mehr News (FA)' },
     { id: 'bbcpersian', label: 'BBC Persian' },
     { id: 'entekhab', label: 'Entekhab (FA)' },
   ]},
-  { key: 'us', label: 'Amerikanisch', icon: flagUs, feeds: [
+  { key: 'us', label: t('sidebar.groupUs'), icon: flagUs, feeds: [
     { id: 'nytimes', label: 'NYTimes' },
     { id: 'washpost', label: 'WashingtonPost' },
     { id: 'npr', label: 'NPR' },
   ]},
-  { key: 'other', label: 'Sonstige', icon: flagGlobe, feeds: [
+  { key: 'other', label: t('sidebar.groupOther'), icon: flagGlobe, feeds: [
     { id: 'netblocks', label: 'NetBlocks (Mastodon)' },
     { id: 'correctiv', label: 'CORRECTIV' },
     { id: 'bellingcat', label: 'Bellingcat' },

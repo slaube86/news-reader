@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useArticlesStore } from '@/stores/articles'
 import { buildCountryStats, type CountryHit } from '@/utils/countryDetector'
 import { STOPWORDS } from '@/config/constants'
+import { useI18n } from '@/composables/useI18n'
 import type { Article } from '@/types/article'
 
 export interface SourceRank {
@@ -21,14 +22,15 @@ export interface TimeSlot {
 }
 
 const TIME_SLOTS = [
-  { label: 'Nacht', from: 0, to: 6 },
-  { label: 'Morgen', from: 6, to: 12 },
-  { label: 'Mittag', from: 12, to: 18 },
-  { label: 'Abend', from: 18, to: 24 },
+  { key: 'time.night' as const, from: 0, to: 6 },
+  { key: 'time.morning' as const, from: 6, to: 12 },
+  { key: 'time.noon' as const, from: 12, to: 18 },
+  { key: 'time.evening' as const, from: 18, to: 24 },
 ] as const
 
 export function useDailySummary() {
   const articlesStore = useArticlesStore()
+  const { t } = useI18n()
 
   const todayArticles = computed<Article[]>(() => {
     const now = new Date()
@@ -60,7 +62,7 @@ export function useDailySummary() {
     for (const item of todayArticles.value) {
       const words = item.title
         .toLowerCase()
-        .replace(/[^\p{L}\p{N}\s\-]/gu, '')
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
         .split(/\s+/)
         .filter((w) => w.length > 2 && !STOPWORDS.has(w))
 
@@ -76,7 +78,7 @@ export function useDailySummary() {
   })
 
   const timeDistribution = computed<TimeSlot[]>(() => {
-    const slots = TIME_SLOTS.map((s) => ({ label: s.label, count: 0 }))
+    const slots = TIME_SLOTS.map((s) => ({ label: t(s.key), count: 0 }))
     for (const item of todayArticles.value) {
       const hour = new Date(item.date).getHours()
       const idx = TIME_SLOTS.findIndex((s) => hour >= s.from && hour < s.to)

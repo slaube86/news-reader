@@ -22,11 +22,15 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 - Supports 15 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat.
 - Filter by source, keyword search, sorting (date/source).
 - Auto-refresh every 15 minutes with countdown display.
-- Mobile sidebar with slide-in/slide-out, overlay, and auto-close.
+- Mobile sidebar with slide-in/slide-out, overlay, and auto-close on feed selection.
 - Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → 🌐 Other.
+- Sidebar footer with copyright, disclaimer, and GitHub link.
 - Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
 - **Infinite Scroll Pagination**: Articles load in pages of 50 with automatic loading via Intersection Observer.
+- **Daily Summary**: Collapsible card above the article list (visible in "Heute" view) showing top sources, mentioned countries (with flags), trending keywords, and time distribution — all computed client-side.
 - **Interactive World Map**: Toggle map view via "🗺️ Karte" button. Displays an interactive Leaflet.js map with circle markers sized by article count per country. 45 countries with multilingual keyword detection (German, English, Farsi). Sidebar shows country list with article counts; clicking a country flies the map to its location and shows a detail panel with source breakdown and article links.
+- **Welcome Modal**: First-visit welcome dialog with typewriter animation explaining the project's motivation. Dismissible with "Don't show again" checkbox (persisted in localStorage). Includes GitHub link.
+- **Internationalization (i18n)**: All UI texts automatically switch between German and English based on `navigator.language`. Central translation system via `useI18n` composable with ~60 translation keys and parameter interpolation.
 - **Spy Chat loading animation**: While feeds load for the first time, an encrypted agent chat (11 randomized dialog pairs in German, Farsi, and English) simulates realistic intelligence communication with typing indicators and timed message bubbles.
 - **Spy Chat toast notifications**: During background refreshes (when articles are already visible), agent chat messages appear as compact toast bubbles (max 2 stacked) in the bottom-right corner. On initial load (no articles yet), a simple "Feeds werden geladen… (X s)" counter is shown instead.
 - Offline support via Dexie.js (IndexedDB with indexes on `date`, `source`, `[date+source]`).
@@ -39,7 +43,7 @@ news-reader/
 ├── index.html                 # Vite entry point
 ├── vite.config.ts             # Vite config (Vue plugin, @/ alias)
 ├── tsconfig.json              # TypeScript strict mode
-├── eslint.config.js           # ESLint flat config
+├── eslint.config.js           # ESLint flat config (with browser globals)
 ├── package.json
 ├── src/
 │   ├── main.ts                # App bootstrap (Vue, Pinia, Router, CSS)
@@ -53,25 +57,29 @@ news-reader/
 │   │   └── ui.ts              # UI state (sidebar, toasts, loading)
 │   ├── components/
 │   │   ├── TopBar.vue         # Header with logo, countdown, refresh, map toggle
-│   │   ├── SideBar.vue        # Source navigation + search
+│   │   ├── SideBar.vue        # Source navigation, search, disclaimer + GitHub link
 │   │   ├── SourceItem.vue     # Individual source in the sidebar
 │   │   ├── SidebarOverlay.vue # Mobile overlay
 │   │   ├── StatsBar.vue       # Articles/sources/today statistics
 │   │   ├── ArticleList.vue    # Article rendering (chronological/grouped)
 │   │   ├── ArticleCard.vue    # Single article with translate button
+│   │   ├── DailySummary.vue   # Collapsible daily summary card (sources, countries, keywords, timeline)
 │   │   ├── LoadingState.vue   # Loading/empty/offline state
 │   │   ├── MapView.vue        # Interactive Leaflet.js world map with country sidebar
+│   │   ├── WelcomeModal.vue   # First-visit welcome dialog with typewriter animation
 │   │   └── ToastNotification.vue  # Toast system
 │   ├── composables/
 │   │   ├── useAutoRefresh.ts  # 15-min auto-refresh with countdown
+│   │   ├── useDailySummary.ts # Daily statistics (source ranking, countries, keywords, time slots)
 │   │   ├── useDexieDB.ts      # Dexie.js storage with indexes, pagination, migration
 │   │   ├── useFeedFetcher.ts  # Parallel proxy fetch, ETag cache, aggregator
+│   │   ├── useI18n.ts         # i18n system (DE/EN) based on navigator.language
 │   │   ├── useIndexedDB.ts    # Legacy IndexedDB (kept for migration)
 │   │   └── useTranslation.ts  # Farsi→German via Workers AI
 │   ├── config/
-│   │   ├── feeds.ts           # 13 feed definitions + Farsi sources
+│   │   ├── feeds.ts           # 15 feed definitions + Farsi sources
 │   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
-│   │   ├── constants.ts       # Proxy URLs, DB config, timings, adaptive batching
+│   │   ├── constants.ts       # Proxy URLs, DB config, timings, adaptive batching, stopwords
 │   │   ├── countries.ts       # 45 countries with multilingual terms + coordinates
 │   │   └── spyDialogs.ts     # 11 randomized agent chat dialogs (DE/FA/EN)
 │   ├── types/
@@ -84,6 +92,8 @@ news-reader/
 │   │   ├── countryDetector.ts # Article→country matching + stats aggregation
 │   │   └── xmlParser.ts       # RSS/Atom XML parsing + Iran filter
 │   └── assets/
+│       ├── icons/
+│       │   └── flags/         # Country flag SVGs (de, us, ir, globe)
 │       └── styles/
 │           ├── variables.css      # CSS custom properties (dark theme)
 │           ├── base.css           # Reset, body, scrollbar
@@ -91,8 +101,6 @@ news-reader/
 │           ├── source-colors.css  # Color codes per source (tags + dots)
 │           ├── transitions.css    # Vue transition classes
 │           └── responsive.css     # Mobile breakpoint (640px)
-├── notes/
-│   └── PERFORMANCE-PLAN.md    # Performance optimization plan
 └── worker/
     ├── worker.js              # Cloudflare Worker (CORS proxy, aggregator, rate-limiting, translation)
     └── wrangler.toml          # Worker configuration
@@ -168,12 +176,13 @@ Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 ## Usage
 
 - Select a source in the sidebar (e.g. Iran International or Tagesschau).
-- Click `Aktualisieren` (Refresh) to manually fetch new articles.
+- Click "Refresh" / "Aktualisieren" to manually fetch new articles.
 - Use the search field for keyword filtering.
 - Switch sorting between date and source.
-- Click `🗺️ Karte` to open the interactive world map showing which countries are mentioned in the news. The sidebar lists countries by article count; click a country for details.
-- For Persian articles, click "Übersetzen" (Translate) for automatic translation.
+- Click the map button to open the interactive world map showing which countries are mentioned in the news. The sidebar lists countries by article count; click a country for details.
+- For Persian articles, click "Translate" / "Übersetzen" for automatic translation.
 - Articles are automatically saved via Dexie.js (available offline).
+- The UI language (German/English) is detected automatically from your browser settings.
 
 ## Notes
 

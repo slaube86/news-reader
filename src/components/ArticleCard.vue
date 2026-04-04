@@ -12,7 +12,7 @@
     </a>
     <template v-if="isFarsi">
       <button class="art-translate-btn" @click.prevent.stop="doTranslate">
-        Übersetzen
+        {{ t('card.translate') }}
       </button>
       <div v-if="translation" class="art-translation">{{ translation }}</div>
     </template>
@@ -26,6 +26,9 @@ import { FARSI_SOURCES } from '@/config/feeds'
 import { formatDate } from '@/utils/formatters'
 import { translateArticle } from '@/composables/useTranslation'
 import { highlightTerms } from '@/utils/countryDetector'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   article: Article
@@ -47,7 +50,7 @@ const highlightedDesc = computed(() =>
 )
 
 async function doTranslate() {
-  translation.value = 'Übersetzung wird geladen...'
+  translation.value = t('card.translating')
   const text = `${props.article.title}${props.article.desc ? '\n\n' + props.article.desc : ''}`
   translation.value = await translateArticle(text)
 }

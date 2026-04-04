@@ -5,6 +5,7 @@ import { getAdaptiveBatchSize } from '@/config/constants'
 import { fetchFeed, fetchAllFromAggregator } from '@/composables/useFeedFetcher'
 import { useArticlesStore } from '@/stores/articles'
 import { useUiStore } from '@/stores/ui'
+import { useI18n } from '@/composables/useI18n'
 import type { FeedConfig } from '@/types/feed'
 
 export interface FeedError {
@@ -35,6 +36,7 @@ export const useFeedsStore = defineStore('feeds', () => {
 
     const articles = useArticlesStore()
     const ui = useUiStore()
+    const { t } = useI18n()
 
     ui.showLoadingToast(articles.filteredItems.length > 0)
     ui.isLoadingFeeds = true
@@ -49,10 +51,10 @@ export const useFeedsStore = defineStore('feeds', () => {
       clearFeedError(src)
 
       if (items.length === 0) {
-        setFeedError(src, 'Keine passenden Iran-Artikel gefunden', 'info')
-        ui.showErrorToast(`${feed.name}: Keine passenden Iran-Artikel gefunden`, 4500)
+        setFeedError(src, t('feeds.noIranArticles'), 'info')
+        ui.showErrorToast(`${feed.name}: ${t('feeds.noIranArticles')}`, 4500)
       } else {
-        ui.showToast(`${feed.name} aktualisiert (${items.length} Artikel)`)
+        ui.showToast(t('feeds.updated', { name: feed.name, n: items.length }))
       }
 
       await articles.saveAndPrune()
@@ -69,6 +71,7 @@ export const useFeedsStore = defineStore('feeds', () => {
   async function fetchAllFeeds(): Promise<void> {
     const articles = useArticlesStore()
     const ui = useUiStore()
+    const { t } = useI18n()
 
     ui.isLoadingFeeds = true
     ui.showLoadingToast(articles.filteredItems.length > 0)
@@ -83,14 +86,14 @@ export const useFeedsStore = defineStore('feeds', () => {
           clearFeedError(feedId)
         } else {
           const feed = feeds.value.find((f) => f.id === feedId)
-          if (feed) setFeedError(feedId, 'Keine passenden Iran-Artikel gefunden', 'info')
+          if (feed) setFeedError(feedId, t('feeds.noIranArticles'), 'info')
         }
         return items
       })
 
       if (allFetched.length > 0) {
         articles.setItems(articles.mergeArticles(articles.allItems, allFetched))
-        ui.showToast('Alle Quellen wurden aktualisiert (Aggregator)')
+        ui.showToast(t('feeds.allUpdatedAggregator'))
         await articles.saveAndPrune()
         ui.isLoadingFeeds = false
         ui.hideLoadingToast()
@@ -132,7 +135,7 @@ export const useFeedsStore = defineStore('feeds', () => {
 
     if (errors.length) {
       ui.showErrorToast(
-        `Konnte nicht laden: ${errors.join(', ')}. CORS-Proxy kann zeitweise überlastet sein.`,
+        t('feeds.loadError', { detail: errors.join(', ') }),
         5000,
       )
     }
@@ -140,13 +143,13 @@ export const useFeedsStore = defineStore('feeds', () => {
     if (!fetchedItems.length && errors.length === feeds.value.length) {
       const savedItems = await articles.loadFromDB().then(() => articles.allItems).catch(() => [])
       if (savedItems.length) {
-        ui.showToast('Offline-Modus: Artikel aus Datenbank geladen')
+        ui.showToast(t('feeds.offlineLoaded'))
       } else {
-        ui.showErrorToast('Keine Verbindung zu den Feeds', 5000)
+        ui.showErrorToast(t('feeds.noConnection'), 5000)
       }
     } else {
       articles.setItems(articles.mergeArticles(articles.allItems, fetchedItems))
-      ui.showToast('Alle Quellen wurden aktualisiert')
+      ui.showToast(t('feeds.allUpdated'))
       await articles.saveAndPrune()
     }
 
