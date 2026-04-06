@@ -35,7 +35,7 @@
     </div>
 
     <div class="sidebar-disclaimer">
-      <p>&copy; 2026 Sebastian Laube</p>
+      <p>&copy; 2026 Sebastian Laube – <a href="https://www.seblaube.de/about" target="_blank" rel="noopener">www.seblaube.de/about</a></p>
       <p>{{ t('sidebar.disclaimer') }}</p>
       <p><a href="https://github.com/slaube86/news-reader" target="_blank" rel="noopener">GitHub</a></p>
     </div>
