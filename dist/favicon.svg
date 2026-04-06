@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#1a1a2e"/>
+  <g clip-path="url(#c)">
+    <rect y="2" width="64" height="20" fill="#239f40"/>
+    <rect y="22" width="64" height="20" fill="#fff"/>
+    <rect y="42" width="64" height="22" fill="#da0000"/>
+    <!-- Simplified emblem -->
+    <g fill="#da0000" transform="translate(32,32)">
+      <path d="M-4,-4 C-4,-8 4,-8 4,-4 C4,0 2,3 0,5 C-2,3 -4,0 -4,-4Z"/>
+      <rect x="-6" y="-1" width="12" height="2" rx="1"/>
+    </g>
+  </g>
+  <!-- News indicator -->
+  <circle cx="52" cy="12" r="10" fill="#f59e0b"/>
+  <text x="52" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a1a2e" font-family="sans-serif">N</text>
+</svg>

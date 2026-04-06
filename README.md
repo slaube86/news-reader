@@ -1,5 +1,7 @@
 # Iran News Reader
 
+**[Live Demo](https://news-reader-9h9o.onrender.com)**
+
 A lightweight, responsive web reader for Iran-related news from various RSS feeds. Built by Sebastian Laube, this app loads content directly from the sources — it does not store its own articles but aggregates and filters existing feeds.
 
 ## Tech Stack
@@ -19,11 +21,11 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 
 ## Features
 
-- Supports 15 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat.
+- Supports 19 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat, Amnesty International, IGFM, Human Rights Watch, Iran Human Rights.
 - Filter by source, keyword search, sorting (date/source).
 - Auto-refresh every 15 minutes with countdown display.
 - Mobile sidebar with slide-in/slide-out, overlay, and auto-close on feed selection.
-- Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → 🌐 Other.
+- Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → ⚖️ Human Rights → 🌐 Other.
 - Sidebar footer with copyright, disclaimer, and GitHub link.
 - Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
 - **Infinite Scroll Pagination**: Articles load in pages of 50 with automatic loading via Intersection Observer.
@@ -35,6 +37,8 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 - **Spy Chat toast notifications**: During background refreshes (when articles are already visible), agent chat messages appear as compact toast bubbles (max 2 stacked) in the bottom-right corner. On initial load (no articles yet), a simple "Feeds werden geladen… (X s)" counter is shown instead.
 - Offline support via Dexie.js (IndexedDB with indexes on `date`, `source`, `[date+source]`).
 - Automatic one-time migration from legacy IndexedDB to Dexie.js.
+- **HTML Entity Decoding**: Automatic decoding of HTML entities (`&amp;`, `&#8220;`, `&ndash;`, etc.) in both the Worker aggregator and client-side storage — articles display cleanly without raw entity codes.
+- **Social Sharing Optimized**: Open Graph and Twitter Card meta tags for rich link previews on WhatsApp, Instagram, Telegram, and X.
 
 ## Project Structure
 
@@ -77,7 +81,7 @@ news-reader/
 │   │   ├── useIndexedDB.ts    # Legacy IndexedDB (kept for migration)
 │   │   └── useTranslation.ts  # Farsi→German via Workers AI
 │   ├── config/
-│   │   ├── feeds.ts           # 15 feed definitions + Farsi sources
+│   │   ├── feeds.ts           # 19 feed definitions + Farsi sources
 │   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
 │   │   ├── constants.ts       # Proxy URLs, DB config, timings, adaptive batching, stopwords
 │   │   ├── countries.ts       # 45 countries with multilingual terms + coordinates
@@ -88,7 +92,7 @@ news-reader/
 │   │   └── toast.ts           # Toast interface
 │   ├── utils/
 │   │   ├── formatters.ts      # Date/time formatting (de-DE)
-│   │   ├── helpers.ts         # hashCode, escapeHtml, isIranRelated
+│   │   ├── helpers.ts         # hashCode, escapeHtml, decodeEntities, isIranRelated
 │   │   ├── countryDetector.ts # Article→country matching + stats aggregation
 │   │   └── xmlParser.ts       # RSS/Atom XML parsing + Iran filter
 │   └── assets/
@@ -145,7 +149,7 @@ npm run dev
 The app uses a custom Cloudflare Worker as a CORS proxy, feed aggregator, and translation service:
 
 - **RSS Proxy** (`GET /?url=...`): Forwards RSS feed requests with an allowlist (known feed domains only), Cloudflare Cache (5 min TTL), CORS headers, and ETag/Last-Modified passthrough for conditional requests.
-- **Feed Aggregator** (`GET /feeds/all`): Fetches all 15 feeds in parallel server-side, parses XML to JSON, filters for Iran-related articles, and returns a single cached response. Reduces client requests from 15 to 1.
+- **Feed Aggregator** (`GET /feeds/all`): Fetches all 19 feeds in parallel server-side, parses XML to JSON, decodes HTML entities, filters for Iran-related articles, and returns a single cached response. Reduces client requests from 19 to 1.
 - **Translation** (`POST /translate`): Translates Persian text to German via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Long texts are automatically split into chunks.
 - **Rate-Limiting**: IP-based throttling (60 requests/minute) to prevent abuse.
 
@@ -153,6 +157,7 @@ The app uses a custom Cloudflare Worker as a CORS proxy, feed aggregator, and tr
 
 - **State Management**: Three Pinia stores (`articles`, `feeds`, `ui`) with clear separation of concerns.
 - **Feed Loading**: Tries aggregator endpoint first (1 request for all feeds). Falls back to adaptive batching (batch size 1–8 based on `navigator.connection`) with dynamic inter-batch delays.
+- **HTML Entity Decoding**: `decodeEntities()` in both Worker (`getElText`) and client (`cleanArticle`) ensures all named (`&amp;`, `&ndash;`), numeric (`&#8220;`), and hex (`&#x27;`) entities are decoded, with a second pass to strip any resulting HTML tags.
 - **Parallel Proxy Fetching**: `Promise.any()` races primary worker and allorigins fallback — the faster proxy wins.
 - **ETag/Last-Modified Cache**: Conditional requests avoid re-downloading unchanged feeds.
 - **Storage**: Dexie.js (IndexedDB wrapper) with indexes on `date`, `source`, and compound `[date+source]` for efficient queries and pruning. Auto-migrates from legacy IndexedDB.
