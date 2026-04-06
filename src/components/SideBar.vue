@@ -83,6 +83,12 @@ const groups = [
     { id: 'washpost', label: 'WashingtonPost' },
     { id: 'npr', label: 'NPR' },
   ]},
+  { key: 'hr', label: t('sidebar.groupHR'), icon: flagGlobe, feeds: [
+    { id: 'amnesty', label: 'Amnesty International' },
+    { id: 'igfm', label: 'IGFM' },
+    { id: 'hrw', label: 'Human Rights Watch' },
+    { id: 'iranhr', label: 'Iran Human Rights' },
+  ]},
   { key: 'other', label: t('sidebar.groupOther'), icon: flagGlobe, feeds: [
     { id: 'netblocks', label: 'NetBlocks (Mastodon)' },
     { id: 'correctiv', label: 'CORRECTIV' },

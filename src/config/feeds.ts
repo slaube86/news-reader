@@ -16,6 +16,10 @@ export const FEEDS: FeedConfig[] = [
   { id: 'entekhab', name: 'Entekhab (FA)', url: 'https://www.entekhab.ir/fa/rss/allnews' },
   { id: 'correctiv', name: 'CORRECTIV', url: 'https://correctiv.org/feed/' },
   { id: 'bellingcat', name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/' },
+  { id: 'amnesty', name: 'Amnesty International', url: 'https://www.amnesty.de/rss/laender/iran' },
+  { id: 'igfm', name: 'IGFM', url: 'https://www.igfm.de/feed/' },
+  { id: 'hrw', name: 'Human Rights Watch', url: 'https://www.hrw.org/rss' },
+  { id: 'iranhr', name: 'Iran Human Rights', url: 'https://iranhr.net/en/rss/' },
 ]
 
 export const FARSI_SOURCES = ['bbcpersian', 'mehr', 'iranintl', 'entekhab'] as const

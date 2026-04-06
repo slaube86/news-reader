@@ -20,6 +20,7 @@ const messages: Record<string, Record<string, string>> = {
     'sidebar.groupDe': 'Deutsch',
     'sidebar.groupIr': 'Persisch',
     'sidebar.groupUs': 'Amerikanisch',
+    'sidebar.groupHR': 'Menschenrechte',
     'sidebar.groupOther': 'Sonstige',
 
     // StatsBar
@@ -112,6 +113,7 @@ const messages: Record<string, Record<string, string>> = {
     'sidebar.groupDe': 'German',
     'sidebar.groupIr': 'Persian',
     'sidebar.groupUs': 'American',
+    'sidebar.groupHR': 'Human Rights',
     'sidebar.groupOther': 'Other',
 
     // StatsBar

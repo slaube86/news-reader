@@ -4,6 +4,7 @@ import type { Article } from '@/types/article'
 import { FEEDS } from '@/config/feeds'
 import { PRUNE_DAYS } from '@/config/constants'
 import { isToday } from '@/utils/formatters'
+import { decodeEntities } from '@/utils/helpers'
 import {
   initDB,
   getAllArticlesFromDexie,
@@ -67,10 +68,18 @@ export const useArticlesStore = defineStore('articles', () => {
     return counts
   })
 
+  function cleanArticle(item: Article): Article {
+    return {
+      ...item,
+      title: decodeEntities(item.title).replace(/<[^>]+>/g, '').trim(),
+      desc: decodeEntities(item.desc).replace(/<[^>]+>/g, '').trim(),
+    }
+  }
+
   function mergeArticles(baseItems: Article[], newItems: Article[]): Article[] {
     const map = new Map<string, Article>()
     baseItems.forEach((item) => map.set(item.id, item))
-    newItems.forEach((item) => map.set(item.id, item))
+    newItems.forEach((item) => map.set(item.id, cleanArticle(item)))
     const merged = Array.from(map.values())
     merged.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     return merged
@@ -82,7 +91,7 @@ export const useArticlesStore = defineStore('articles', () => {
       const items = await getAllArticlesFromDexie()
       savedArticleIds.value = new Set(items.map((i) => i.id))
       if (items.length) {
-        allItems.value = items
+        allItems.value = items.map(cleanArticle)
       }
     } catch (e) {
       console.error('Dexie: loadFromDB fehlgeschlagen:', e)

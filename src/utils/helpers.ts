@@ -23,3 +23,23 @@ export function isIranRelated(text: string): boolean {
   const t = text.toLowerCase()
   return IRAN_TERMS.some(term => t.includes(term))
 }
+
+const HTML_ENTITIES: Record<string, string> = {
+  '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'",
+  '&ndash;': '–', '&mdash;': '—', '&laquo;': '«', '&raquo;': '»',
+  '&nbsp;': ' ', '&copy;': '©', '&reg;': '®', '&trade;': '™',
+  '&hellip;': '…', '&bull;': '•', '&middot;': '·',
+  '&lsquo;': '\u2018', '&rsquo;': '\u2019', '&ldquo;': '\u201C', '&rdquo;': '\u201D',
+}
+
+export function decodeEntities(str: string): string {
+  if (!str) return str
+  return str.replace(
+    /&(?:#(\d+)|#x([0-9a-fA-F]+)|[a-zA-Z]+);/g,
+    (entity, dec, hex) => {
+      if (dec) return String.fromCodePoint(Number(dec))
+      if (hex) return String.fromCodePoint(parseInt(hex, 16))
+      return HTML_ENTITIES[entity] || entity
+    },
+  )
+}

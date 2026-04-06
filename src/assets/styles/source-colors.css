@@ -13,6 +13,10 @@
 .tag-entekhab   { background: rgba(0,140,80,.25);    color: #5ee8a0; }
 .tag-correctiv  { background: rgba(0,100,170,.3);    color: #6ec4f0; }
 .tag-bellingcat { background: rgba(200,160,0,.3);    color: #f0d060; }
+.tag-amnesty    { background: rgba(220,180,0,.3);    color: #f5d442; }
+.tag-igfm       { background: rgba(0,130,60,.28);    color: #50d890; }
+.tag-hrw        { background: rgba(120,60,180,.28);   color: #c490f0; }
+.tag-iranhr     { background: rgba(200,50,80,.28);    color: #f08090; }
 .tag-default    { background: rgba(100,100,100,.2);  color: #aaa; }
 
 .dot-tagesschau { background: #7cc8e8; }
@@ -30,4 +34,8 @@
 .dot-entekhab   { background: #5ee8a0; }
 .dot-correctiv  { background: #6ec4f0; }
 .dot-bellingcat { background: #f0d060; }
+.dot-amnesty    { background: #f5d442; }
+.dot-igfm       { background: #50d890; }
+.dot-hrw        { background: #c490f0; }
+.dot-iranhr     { background: #f08090; }
 .dot-default    { background: #888; }

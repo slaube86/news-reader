@@ -16,7 +16,11 @@ const ALLOWED_HOSTS = [
   'www.aljazeera.com',
   'www.entekhab.ir',
   'correctiv.org',
-  'www.bellingcat.com'
+  'www.bellingcat.com',
+  'www.amnesty.de',
+  'www.igfm.de',
+  'www.hrw.org',
+  'iranhr.net'
 ];
 
 const FEEDS = [
@@ -35,6 +39,10 @@ const FEEDS = [
   { id: 'entekhab', name: 'Entekhab (FA)', url: 'https://www.entekhab.ir/fa/rss/allnews' },
   { id: 'correctiv', name: 'CORRECTIV', url: 'https://correctiv.org/feed/' },
   { id: 'bellingcat', name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/' },
+  { id: 'amnesty', name: 'Amnesty International', url: 'https://www.amnesty.de/rss/laender/iran' },
+  { id: 'igfm', name: 'IGFM', url: 'https://www.igfm.de/feed/' },
+  { id: 'hrw', name: 'Human Rights Watch', url: 'https://www.hrw.org/rss' },
+  { id: 'iranhr', name: 'Iran Human Rights', url: 'https://iranhr.net/en/rss/' },
 ];
 
 const IRAN_TERMS = [
@@ -263,15 +271,34 @@ function isIranRelated(text) {
   return IRAN_TERMS.some(term => t.includes(term));
 }
 
+const HTML_ENTITIES = {
+  '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'",
+  '&ndash;': '–', '&mdash;': '—', '&laquo;': '«', '&raquo;': '»',
+  '&nbsp;': ' ', '&copy;': '©', '&reg;': '®', '&trade;': '™',
+  '&hellip;': '…', '&bull;': '•', '&middot;': '·',
+  '&lsquo;': '\u2018', '&rsquo;': '\u2019', '&ldquo;': '\u201C', '&rdquo;': '\u201D',
+};
+
+function decodeEntities(str) {
+  return str
+    .replace(/&(?:#(\d+)|#x([0-9a-fA-F]+)|[a-zA-Z]+);/g, (entity, dec, hex) => {
+      if (dec) return String.fromCodePoint(Number(dec));
+      if (hex) return String.fromCodePoint(parseInt(hex, 16));
+      return HTML_ENTITIES[entity] || entity;
+    });
+}
+
 function getElText(el, tag) {
   // Cloudflare Workers haben keinen DOMParser, daher Regex-basiert
   const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, 'i');
   const match = el.match(regex);
   if (!match) return '';
-  return match[1]
-    .replace(/<!\[CDATA\[|\]\]>/g, '')
-    .replace(/<[^>]+>/g, '')
-    .trim();
+  return decodeEntities(
+    match[1]
+      .replace(/<!\[CDATA\[|\]\]>/g, '')
+      .replace(/<[^>]+>/g, '')
+      .trim()
+  ).replace(/<[^>]+>/g, '').trim();
 }
 
 function parseXmlToArticles(xmlText, feed) {
