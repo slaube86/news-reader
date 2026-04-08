@@ -20,7 +20,12 @@ const ALLOWED_HOSTS = [
   'www.amnesty.de',
   'www.igfm.de',
   'www.hrw.org',
-  'iranhr.net'
+  'iranhr.net',
+  'www.radiofarda.com',
+  'ir.voanews.com',
+  'www.ncr-iran.org',
+  'www.radiozamaneh.com',
+  'prod.radiozamaneh.org',
 ];
 
 const FEEDS = [
@@ -43,6 +48,10 @@ const FEEDS = [
   { id: 'igfm', name: 'IGFM', url: 'https://www.igfm.de/feed/' },
   { id: 'hrw', name: 'Human Rights Watch', url: 'https://www.hrw.org/rss' },
   { id: 'iranhr', name: 'Iran Human Rights', url: 'https://iranhr.net/en/rss/' },
+  { id: 'radiofarda', name: 'Radio Farda (FA)', url: 'https://www.radiofarda.com/api/zrttpol-vomx-tpeoogpi' },
+  { id: 'voapersian', name: 'VOA Persian (FA)', url: 'https://ir.voanews.com/api/zbtpil-vomx-tpeqiyp' },
+  { id: 'ncri', name: 'NCRI', url: 'https://www.ncr-iran.org/en/feed/' },
+  { id: 'radiozamaneh', name: 'Radio Zamaneh (FA)', url: 'https://www.radiozamaneh.com/feed/' },
 ];
 
 // HIGH: Directly Iran — 1 match = Iran-related

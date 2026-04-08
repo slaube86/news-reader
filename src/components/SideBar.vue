@@ -77,6 +77,10 @@ const groups = [
     { id: 'mehr', label: 'Mehr News (FA)' },
     { id: 'bbcpersian', label: 'BBC Persian' },
     { id: 'entekhab', label: 'Entekhab (FA)' },
+    { id: 'radiofarda', label: 'Radio Farda (FA)' },
+    { id: 'voapersian', label: 'VOA Persian (FA)' },
+    { id: 'ncri', label: 'NCRI' },
+    { id: 'radiozamaneh', label: 'Radio Zamaneh (FA)' },
   ]},
   { key: 'us', label: t('sidebar.groupUs'), icon: flagUs, feeds: [
     { id: 'nytimes', label: 'NYTimes' },
