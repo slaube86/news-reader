@@ -45,15 +45,39 @@ const FEEDS = [
   { id: 'iranhr', name: 'Iran Human Rights', url: 'https://iranhr.net/en/rss/' },
 ];
 
-const IRAN_TERMS = [
-  'iran', 'tehran', 'teheran', 'chamenei', 'khamenei',
-  'iranisch', 'iranische', 'hormus', 'persisch', 'mossad',
-  'revolutionsgard', 'atomabkommen', 'jcpoa', 'isfahan',
-  'nuclear', 'nuclear deal', 'sanctions', 'ayatollah',
-  'revolution guard', 'persian gulf', 'iranian',
-  'mullah', 'shah', 'nuclear program', 'caspian',
-  'irgc', 'basij', 'cyberattack', 'internet cut', 'watchdog', 'connectivity',
-  'ایران', 'تهران', 'خامنه‌ای', 'سپاه', 'اصفهان', 'خلیج فارس', 'برجام', 'تحریم', 'ملا', 'شاه', 'هسته‌ای', 'موساد', 'نیروهای بسیج',
+// HIGH: Directly Iran — 1 match = Iran-related
+const IRAN_TERMS_HIGH = [
+  'iran', 'iranian', 'iranisch', 'iranische', 'iranischen', 'iranischer',
+  'tehran', 'teheran', 'isfahan', 'natanz', 'fordo', 'bushehr', 'arak', 'evin', 'qom',
+  'khamenei', 'chamenei', 'raisi', 'pezeshkian', 'rouhani',
+  'irgc', 'revolutionsgard', 'revolution guard',
+  'jcpoa', 'atomabkommen',
+  'iran war',
+  // Opposition & Protest — direkt Iran
+  'mojahedin', 'mek', 'pmoi', 'ncri', 'maryam rajavi', 'reza pahlavi',
+  'mahsa amini', 'jina amini',
+  'ایران', 'تهران', 'خامنه‌ای', 'سپاه', 'اصفهان', 'برجام', 'نیروهای بسیج',
+  'مجاهدین', 'مریم رجوی', 'مهسا امینی',
+];
+
+// MEDIUM: Iran-nah — 2 matches or 1 MEDIUM + 1 LOW = Iran-related
+const IRAN_TERMS_MEDIUM = [
+  'ayatollah', 'supreme leader', 'mullah',
+  'persian gulf', 'persisch', 'hormus', 'basij',
+  'hezbollah', 'hisbollah',
+  'nuclear deal', 'nuclear program',
+  // Opposition & Protest — Iran-nah
+  'woman life freedom', 'frau leben freiheit', 'morality police', 'sittenpolizei',
+  'خلیج فارس', 'تحریم', 'ملا', 'هسته‌ای',
+  'زن زندگی آزادی', 'گشت ارشاد',
+];
+
+// LOW: Generisch — allein nicht ausreichend
+const IRAN_TERMS_LOW = [
+  'nuclear', 'sanctions', 'cyberattack', 'internet cut',
+  'shah', 'caspian', 'mossad', 'reform movement',
+  'watchdog', 'connectivity',
+  'شاه', 'موساد',
 ];
 
 const CORS_HEADERS = {
@@ -268,7 +292,12 @@ function hashCode(str) {
 
 function isIranRelated(text) {
   const t = text.toLowerCase();
-  return IRAN_TERMS.some(term => t.includes(term));
+  if (IRAN_TERMS_HIGH.some(term => t.includes(term))) return true;
+  const mediumCount = IRAN_TERMS_MEDIUM.filter(term => t.includes(term)).length;
+  if (mediumCount >= 2) return true;
+  const lowCount = IRAN_TERMS_LOW.filter(term => t.includes(term)).length;
+  if (mediumCount >= 1 && lowCount >= 1) return true;
+  return false;
 }
 
 const HTML_ENTITIES = {

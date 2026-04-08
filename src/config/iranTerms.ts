@@ -1,10 +1,37 @@
-export const IRAN_TERMS: readonly string[] = [
-  'iran', 'tehran', 'teheran', 'chamenei', 'khamenei',
-  'iranisch', 'iranische', 'hormus', 'persisch', 'mossad',
-  'revolutionsgard', 'atomabkommen', 'jcpoa', 'isfahan',
-  'iran war', 'nuclear', 'nuclear deal', 'sanctions', 'ayatollah',
-  'Supreme Leader', 'revolution guard', 'Qom', 'Persian gulf', 'iranian',
-  'mullah', 'reform movement', 'shah', 'nuclear program', 'caspian',
-  'IRGC', 'Basij', 'cyberattack', 'internet cut', 'Watchdog', 'connectivity',
-  'ایران', 'تهران', 'خامنه‌ای', 'سپاه', 'اصفهان', 'خلیج فارس', 'برجام', 'تحریم', 'ملا', 'شاه', 'هسته‌ای', 'موساد', 'نیروهای بسیج',
+// HIGH: Directly Iran — 1 match = Iran-related
+export const IRAN_TERMS_HIGH: readonly string[] = [
+  'iran', 'iranian', 'iranisch', 'iranische', 'iranischen', 'iranischer',
+  'tehran', 'teheran', 'isfahan', 'natanz', 'fordo', 'bushehr', 'arak', 'evin', 'qom',
+  'khamenei', 'chamenei', 'raisi', 'pezeshkian', 'rouhani',
+  'irgc', 'revolutionsgard', 'revolution guard',
+  'jcpoa', 'atomabkommen',
+  'iran war',
+  // Opposition & Protest — direkt Iran
+  'mojahedin', 'mek', 'pmoi', 'ncri', 'maryam rajavi', 'reza pahlavi',
+  'mahsa amini', 'jina amini',
+  // Farsi — direkt Iran
+  'ایران', 'تهران', 'خامنه‌ای', 'سپاه', 'اصفهان', 'برجام', 'نیروهای بسیج',
+  'مجاهدین', 'مریم رجوی', 'مهسا امینی',
+]
+
+// MEDIUM: Iran-nah — 2 matches or 1 MEDIUM + 1 LOW = Iran-related
+export const IRAN_TERMS_MEDIUM: readonly string[] = [
+  'ayatollah', 'supreme leader', 'mullah',
+  'persian gulf', 'persisch', 'hormus', 'basij',
+  'hezbollah', 'hisbollah',
+  'nuclear deal', 'nuclear program',
+  // Opposition & Protest — Iran-nah
+  'woman life freedom', 'frau leben freiheit', 'morality police', 'sittenpolizei',
+  // Farsi — Iran-nah
+  'خلیج فارس', 'تحریم', 'ملا', 'هسته‌ای',
+  'زن زندگی آزادی', 'گشت ارشاد',
+]
+
+// LOW: Generisch — allein nicht ausreichend
+export const IRAN_TERMS_LOW: readonly string[] = [
+  'nuclear', 'sanctions', 'cyberattack', 'internet cut',
+  'shah', 'caspian', 'mossad', 'reform movement',
+  'watchdog', 'connectivity',
+  // Farsi — generisch
+  'شاه', 'موساد',
 ]

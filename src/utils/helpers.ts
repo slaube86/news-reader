@@ -1,4 +1,4 @@
-import { IRAN_TERMS } from '@/config/iranTerms'
+import { IRAN_TERMS_HIGH, IRAN_TERMS_MEDIUM, IRAN_TERMS_LOW } from '@/config/iranTerms'
 
 export function hashCode(str: string): number {
   let hash = 0
@@ -21,7 +21,13 @@ export function escapeHtml(str: string): string {
 
 export function isIranRelated(text: string): boolean {
   const t = text.toLowerCase()
-  return IRAN_TERMS.some(term => t.includes(term))
+  const high = IRAN_TERMS_HIGH.some(term => t.includes(term))
+  if (high) return true
+  const mediumCount = IRAN_TERMS_MEDIUM.filter(term => t.includes(term)).length
+  if (mediumCount >= 2) return true
+  const lowCount = IRAN_TERMS_LOW.filter(term => t.includes(term)).length
+  if (mediumCount >= 1 && lowCount >= 1) return true
+  return false
 }
 
 const HTML_ENTITIES: Record<string, string> = {
