@@ -1,37 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Iran News Reader – Nachrichten aus 19 Quellen</title>
-<meta name="description" content="Ein Open-Source News-Reader, der Iran-bezogene Nachrichten aus 19 internationalen Quellen bündelt. Mit Weltkarte, Farsi-Übersetzung und täglicher Zusammenfassung.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iran News Reader – Nachrichten aus 23 Quellen</title>
+    <meta
+      name="description"
+      content="Ein Open-Source News-Reader, der Iran-bezogene Nachrichten aus 23 internationalen Quellen bündelt. Mit Weltkarte, Übersetzung und täglicher Zusammenfassung."
+    />
 
-<!-- Open Graph / WhatsApp / Facebook / Instagram -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://news-reader-9h9o.onrender.com/">
-<meta property="og:title" content="Iran News Reader – Nachrichten aus 19 Quellen">
-<meta property="og:description" content="Open-Source News-Reader: 19 Quellen, Weltkarte, Farsi→Deutsch Übersetzung, tägliche Zusammenfassung. Kostenlos & offline-fähig.">
-<meta property="og:image" content="https://news-reader-9h9o.onrender.com/og-preview.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="de_DE">
-<meta property="og:locale:alternate" content="en_US">
+    <!-- Open Graph / WhatsApp / Facebook / Instagram -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://news-reader-9h9o.onrender.com/" />
+    <meta
+      property="og:title"
+      content="Iran News Reader – Nachrichten aus 23 Quellen"
+    />
+    <meta
+      property="og:description"
+      content="Open-Source News-Reader: 23 Quellen, Weltkarte, Übersetzung, tägliche Zusammenfassung. Kostenlos & offline-fähig."
+    />
+    <meta
+      property="og:image"
+      content="https://news-reader-9h9o.onrender.com/og-preview.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:locale:alternate" content="en_US" />
 
-<!-- Twitter / X -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Iran News Reader – 19 Sources, One App">
-<meta name="twitter:description" content="Open-source news reader aggregating Iran-related news from 19 international sources. Interactive map, Farsi translation, daily summary.">
-<meta name="twitter:image" content="https://news-reader-9h9o.onrender.com/og-preview.png">
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Iran News Reader – 23 Sources, One App"
+    />
+    <meta
+      name="twitter:description"
+      content="Open-source news reader aggregating Iran-related news from 23 international sources. Interactive map, translation, daily summary."
+    />
+    <meta
+      name="twitter:image"
+      content="https://news-reader-9h9o.onrender.com/og-preview.png"
+    />
 
-<!-- Favicon -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/index-CX9VB8Id.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-D1Y11dbv.css">
-</head>
-<body>
-<div id="app"></div>
-</body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Synchronous locale detection – runs before first paint so the browser
+      never sees the wrong language in <title> or <meta>.
+      Uses the same de-vs-en logic as src/composables/useI18n.ts.
+      OG / Twitter tags are also patched here for completeness; social-sharing
+      crawlers that do execute JS will pick up the correct locale.
+    -->
+    <script>
+      (function () {
+        var lang =
+          (navigator.language || "").split("-")[0] === "de" ? "de" : "en";
+
+        // Keep <html lang="…"> in sync with the detected locale.
+        document.documentElement.lang = lang;
+
+        var i18n = {
+          de: {
+            title: "Iran News Reader – Nachrichten aus 23 Quellen",
+            description:
+              "Ein Open-Source News-Reader, der Iran-bezogene Nachrichten aus 23 internationalen Quellen bündelt. Mit Weltkarte, Übersetzung und täglicher Zusammenfassung.",
+            ogTitle: "Iran News Reader – Nachrichten aus 23 Quellen",
+            ogDescription:
+              "Open-Source News-Reader: 23 Quellen, Weltkarte, Übersetzung, tägliche Zusammenfassung. Kostenlos & offline-fähig.",
+            ogLocale: "de_DE",
+          },
+          en: {
+            title: "Iran News Reader – News from 23 Sources",
+            description:
+              "An open-source news reader aggregating Iran-related news from 23 international sources. With interactive world map, translation, and daily summary.",
+            ogTitle: "Iran News Reader – 23 Sources, One App",
+            ogDescription:
+              "Open-source news reader aggregating Iran-related news from 23 international sources. Interactive map, translation, daily summary.",
+            ogLocale: "en_US",
+          },
+        };
+
+        var s = i18n[lang];
+
+        document.title = s.title;
+
+        // Helper: find a meta element by selector and overwrite one attribute.
+        function setMeta(selector, attr, value) {
+          var el = document.querySelector(selector);
+          if (el) el.setAttribute(attr, value);
+        }
+
+        setMeta('meta[name="description"]', "content", s.description);
+        setMeta('meta[property="og:title"]', "content", s.ogTitle);
+        setMeta('meta[property="og:description"]', "content", s.ogDescription);
+        setMeta('meta[property="og:locale"]', "content", s.ogLocale);
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-CX9VB8Id.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D1Y11dbv.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
 </html>
