@@ -15,19 +15,27 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 | TypeScript | 5.9 | Type safety |
 | Leaflet.js | 1.9 | Interactive world map with heatmap markers |
 | ESLint | 10.1 | Linting (flat config with `eslint-plugin-vue` + `typescript-eslint`) |
-| Cloudflare Workers | — | CORS proxy, feed aggregator & Farsi→German translation (Workers AI) |
+| Cloudflare Workers | — | CORS proxy, feed aggregator & locale-aware translation DE/EN/FA (Workers AI) |
 | Dexie.js | 4.x | IndexedDB wrapper with indexes & typed queries |
 | IndexedDB | — | Offline article storage (60 days, via Dexie.js) |
 
 ## Features
 
-- Supports 19 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat, Amnesty International, IGFM, Human Rights Watch, Iran Human Rights.
+- Supports 23 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat, Amnesty International, IGFM, Human Rights Watch, Iran Human Rights, Radio Farda (FA), VOA Persian (FA), NCRI, Radio Zamaneh (FA).
 - Filter by source, keyword search, sorting (date/source).
 - Auto-refresh every 15 minutes with countdown display.
 - Mobile sidebar with slide-in/slide-out, overlay, and auto-close on feed selection.
 - Sidebar grouped by language: 🇩🇪 German → 🇮🇷 Persian → 🇺🇸 American → ⚖️ Human Rights → 🌐 Other.
 - Sidebar footer with copyright, disclaimer, and GitHub link.
-- Translation of Persian articles via Cloudflare Workers AI (m2m100 model).
+- **Locale-Aware Translation**: Every article whose source language differs from the user's browser language gets a translate button. The translation target is automatically derived from `navigator.language` and supports three languages — German (`de`), English (`en`), and Farsi (`fa`). Translation is powered by Cloudflare Workers AI (`m2m100-1.2b`). The button label always shows the target language name (e.g. "Übersetzen → English", "Translate → Deutsch", "Translate → فارسی").
+
+  | Browser language | Translate button appears on | Button label example |
+  |---|---|---|
+  | `de` (German) | English + Farsi articles | Übersetzen → Deutsch |
+  | `en` (English) | German + Farsi articles | Translate → English |
+  | `fa` (Farsi) | German + English articles | Translate → فارسی |
+  | Any other | German + Farsi articles | Translate → English |
+
 - **Infinite Scroll Pagination**: Articles load in pages of 50 with automatic loading via Intersection Observer.
 - **Daily Summary**: Collapsible card above the article list (visible in "Heute" view) showing top sources, mentioned countries (with flags), trending keywords, and time distribution — all computed client-side.
 - **Interactive World Map**: Toggle map view via "🗺️ Karte" button. Displays an interactive Leaflet.js map with circle markers sized by article count per country. 45 countries with multilingual keyword detection (German, English, Farsi). Sidebar shows country list with article counts; clicking a country flies the map to its location and shows a detail panel with source breakdown and article links.
@@ -66,7 +74,7 @@ news-reader/
 │   │   ├── SidebarOverlay.vue # Mobile overlay
 │   │   ├── StatsBar.vue       # Articles/sources/today statistics
 │   │   ├── ArticleList.vue    # Article rendering (chronological/grouped)
-│   │   ├── ArticleCard.vue    # Single article with translate button
+│   │   ├── ArticleCard.vue    # Single article with locale-aware translate button
 │   │   ├── DailySummary.vue   # Collapsible daily summary card (sources, countries, keywords, timeline)
 │   │   ├── LoadingState.vue   # Loading/empty/offline state
 │   │   ├── MapView.vue        # Interactive Leaflet.js world map with country sidebar
@@ -77,15 +85,15 @@ news-reader/
 │   │   ├── useDailySummary.ts # Daily statistics (source ranking, countries, keywords, time slots)
 │   │   ├── useDexieDB.ts      # Dexie.js storage with indexes, pagination, migration
 │   │   ├── useFeedFetcher.ts  # Parallel proxy fetch, ETag cache, aggregator
-│   │   ├── useI18n.ts         # i18n system (DE/EN) based on navigator.language
+│   │   ├── useI18n.ts         # i18n system (DE/EN UI) + translationLang (DE/EN/FA) from navigator.language
 │   │   ├── useIndexedDB.ts    # Legacy IndexedDB (kept for migration)
-│   │   └── useTranslation.ts  # Farsi→German via Workers AI
+│   │   └── useTranslation.ts  # Locale-aware translation via Workers AI (source lang → user's lang)
 │   ├── config/
-│   │   ├── feeds.ts           # 19 feed definitions + Farsi sources
-│   │   ├── iranTerms.ts       # 47 Iran keywords (DE/EN/FA)
+│   │   ├── feeds.ts           # 23 feed definitions + SOURCE_LANG map (de/en/fa per feed)
+│   │   ├── iranTerms.ts       # 3-tier Iran keywords (HIGH/MEDIUM/LOW, DE/EN/FA)
 │   │   ├── constants.ts       # Proxy URLs, DB config, timings, adaptive batching, stopwords
 │   │   ├── countries.ts       # 45 countries with multilingual terms + coordinates
-│   │   └── spyDialogs.ts     # 11 randomized agent chat dialogs (DE/FA/EN)
+│   │   └── spyDialogs.ts      # 11 randomized agent chat dialogs (DE/FA/EN)
 │   ├── types/
 │   │   ├── article.ts         # Article interface
 │   │   ├── feed.ts            # FeedConfig interface
@@ -149,14 +157,16 @@ npm run dev
 The app uses a custom Cloudflare Worker as a CORS proxy, feed aggregator, and translation service:
 
 - **RSS Proxy** (`GET /?url=...`): Forwards RSS feed requests with an allowlist (known feed domains only), Cloudflare Cache (5 min TTL), CORS headers, and ETag/Last-Modified passthrough for conditional requests.
-- **Feed Aggregator** (`GET /feeds/all`): Fetches all 19 feeds in parallel server-side, parses XML to JSON, decodes HTML entities, filters for Iran-related articles, and returns a single cached response. Reduces client requests from 19 to 1.
-- **Translation** (`POST /translate`): Translates Persian text to German via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Long texts are automatically split into chunks.
+- **Feed Aggregator** (`GET /feeds/all`): Fetches all 23 feeds in parallel server-side, parses XML to JSON, decodes HTML entities, filters for Iran-related articles (3-tier scoring: HIGH/MEDIUM/LOW), and returns a single cached response. Reduces client requests from 23 to 1.
+- **Translation** (`POST /translate`): Translates article text between German, English, and Farsi via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Accepts a `source` and `target` language code in the request body — both are determined dynamically by the client. Long texts are automatically split into chunks at sentence boundaries.
 - **Rate-Limiting**: IP-based throttling (60 requests/minute) to prevent abuse.
 
 ### Client (Vue 3 SPA)
 
 - **State Management**: Three Pinia stores (`articles`, `feeds`, `ui`) with clear separation of concerns.
 - **Feed Loading**: Tries aggregator endpoint first (1 request for all feeds). Falls back to adaptive batching (batch size 1–8 based on `navigator.connection`) with dynamic inter-batch delays.
+- **Iran Relevance Scoring**: 3-tier keyword system (HIGH: direct Iran terms → 1 match sufficient; MEDIUM: Iran-adjacent → 2 matches or 1 MEDIUM + 1 LOW; LOW: generic terms → insufficient alone). Includes opposition/protest terms (Mahsa Amini, Woman Life Freedom, MEK/PMOI, etc.).
+- **Locale-Aware Translation**: Each feed is tagged with a content language in `SOURCE_LANG` (`de` | `en` | `fa`). `useI18n` exposes two separate detections from `navigator.language`: `lang` (UI language, `de` | `en`) and `translationLang` (translation target, `de` | `en` | `fa`). `ArticleCard` shows a translate button only when the article's source language differs from `translationLang`, and the button label names the target language explicitly (e.g. "Übersetzen → English"). `useTranslation` passes both the article's source language and the user's target language to the Worker — no language is hardcoded anywhere.
 - **HTML Entity Decoding**: `decodeEntities()` in both Worker (`getElText`) and client (`cleanArticle`) ensures all named (`&amp;`, `&ndash;`), numeric (`&#8220;`), and hex (`&#x27;`) entities are decoded, with a second pass to strip any resulting HTML tags.
 - **Parallel Proxy Fetching**: `Promise.any()` races primary worker and allorigins fallback — the faster proxy wins.
 - **ETag/Last-Modified Cache**: Conditional requests avoid re-downloading unchanged feeds.
@@ -185,7 +195,7 @@ Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 - Use the search field for keyword filtering.
 - Switch sorting between date and source.
 - Click the map button to open the interactive world map showing which countries are mentioned in the news. The sidebar lists countries by article count; click a country for details.
-- For Persian articles, click "Translate" / "Übersetzen" for automatic translation.
+- Articles in a foreign language automatically show a translate button labeled with the target language name (e.g. "Translate → Deutsch" or "Übersetzen → English"). The target language is detected from your browser/OS settings and supports German, English, and Farsi.
 - Articles are automatically saved via Dexie.js (available offline).
 - The UI language (German/English) is detected automatically from your browser settings.
 
@@ -193,7 +203,7 @@ Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 
 - CORS Proxy: Custom Cloudflare Worker with allowlist as primary proxy, `allorigins.win` as fallback. Both are raced in parallel.
 - Feed Aggregator: Worker endpoint `/feeds/all` loads all feeds server-side in one request.
-- Translation: Cloudflare Workers AI (free tier: 10,000 neurons/day).
+- Translation: Cloudflare Workers AI (free tier: 10,000 neurons/day). Source and target language are fully dynamic — no language pair is hardcoded.
 - Rate-Limiting: Worker limits each IP to 60 requests per minute.
 - If individual feeds fail, the app displays error details in the sidebar.
 
