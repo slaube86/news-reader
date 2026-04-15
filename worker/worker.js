@@ -2,97 +2,229 @@
 // Features: Whitelisted Domains, ETag-Passthrough, Feed-Aggregator, Rate-Limiting
 
 const ALLOWED_HOSTS = [
-  'www.tagesschau.de',
-  'www.spiegel.de',
-  'www.zdf.de',
-  'newsfeed.zeit.de',
-  'rss.nytimes.com',
-  'feeds.washingtonpost.com',
-  'feeds.npr.org',
-  'mastodon.social',
-  'www.mehrnews.com',
-  'www.bbc.com',
-  'www.iranintl.com',
-  'www.aljazeera.com',
-  'www.entekhab.ir',
-  'correctiv.org',
-  'www.bellingcat.com',
-  'www.amnesty.de',
-  'www.igfm.de',
-  'www.hrw.org',
-  'iranhr.net',
-  'www.radiofarda.com',
-  'ir.voanews.com',
-  'www.ncr-iran.org',
-  'www.radiozamaneh.com',
-  'prod.radiozamaneh.org',
+  "www.tagesschau.de",
+  "www.spiegel.de",
+  "www.zdf.de",
+  "newsfeed.zeit.de",
+  "rss.nytimes.com",
+  "feeds.washingtonpost.com",
+  "feeds.npr.org",
+  "mastodon.social",
+  "www.mehrnews.com",
+  "www.bbc.com",
+  "www.iranintl.com",
+  "www.aljazeera.com",
+  "www.entekhab.ir",
+  "correctiv.org",
+  "www.bellingcat.com",
+  "www.amnesty.de",
+  "www.igfm.de",
+  "www.hrw.org",
+  "iranhr.net",
+  "www.radiofarda.com",
+  "ir.voanews.com",
+  "www.ncr-iran.org",
+  "www.pbs.org",
+  "www.crisisgroup.org",
+  "news.un.org",
 ];
 
 const FEEDS = [
-  { id: 'tagesschau', name: 'Tagesschau', url: 'https://www.tagesschau.de/xml/rss2' },
-  { id: 'spiegel', name: 'Spiegel', url: 'https://www.spiegel.de/schlagzeilen/tops/index.rss' },
-  { id: 'zdf', name: 'ZDF heute', url: 'https://www.zdf.de/rss/zdf/nachrichten' },
-  { id: 'iranintl', name: 'Iran International', url: 'https://www.iranintl.com/feed' },
-  { id: 'zeit', name: 'Zeit Online', url: 'https://newsfeed.zeit.de/all' },
-  { id: 'nytimes', name: 'NYTimes', url: 'https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml' },
-  { id: 'washpost', name: 'WashingtonPost', url: 'https://feeds.washingtonpost.com/rss/world' },
-  { id: 'npr', name: 'NPR', url: 'https://feeds.npr.org/1004/rss.xml' },
-  { id: 'netblocks', name: 'NetBlocks (Mastodon)', url: 'https://mastodon.social/@netblocks.rss' },
-  { id: 'mehr', name: 'Mehr News (FA)', url: 'https://www.mehrnews.com/rss' },
-  { id: 'bbcpersian', name: 'BBC Persian', url: 'https://www.bbc.com/persian/index.xml' },
-  { id: 'aljazeera', name: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml' },
-  { id: 'entekhab', name: 'Entekhab (FA)', url: 'https://www.entekhab.ir/fa/rss/allnews' },
-  { id: 'correctiv', name: 'CORRECTIV', url: 'https://correctiv.org/feed/' },
-  { id: 'bellingcat', name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/' },
-  { id: 'amnesty', name: 'Amnesty International', url: 'https://www.amnesty.de/rss/laender/iran' },
-  { id: 'igfm', name: 'IGFM', url: 'https://www.igfm.de/feed/' },
-  { id: 'hrw', name: 'Human Rights Watch', url: 'https://www.hrw.org/rss' },
-  { id: 'iranhr', name: 'Iran Human Rights', url: 'https://iranhr.net/en/rss/' },
-  { id: 'radiofarda', name: 'Radio Farda (FA)', url: 'https://www.radiofarda.com/api/zrttpol-vomx-tpeoogpi' },
-  { id: 'voapersian', name: 'VOA Persian (FA)', url: 'https://ir.voanews.com/api/zbtpil-vomx-tpeqiyp' },
-  { id: 'ncri', name: 'NCRI', url: 'https://www.ncr-iran.org/en/feed/' },
-  { id: 'radiozamaneh', name: 'Radio Zamaneh (FA)', url: 'https://www.radiozamaneh.com/feed/' },
+  {
+    id: "tagesschau",
+    name: "Tagesschau",
+    url: "https://www.tagesschau.de/xml/rss2",
+  },
+  {
+    id: "spiegel",
+    name: "Spiegel",
+    url: "https://www.spiegel.de/schlagzeilen/tops/index.rss",
+  },
+  {
+    id: "zdf",
+    name: "ZDF heute",
+    url: "https://www.zdf.de/rss/zdf/nachrichten",
+  },
+  {
+    id: "iranintl",
+    name: "Iran International",
+    url: "https://www.iranintl.com/feed",
+  },
+  { id: "zeit", name: "Zeit Online", url: "https://newsfeed.zeit.de/all" },
+  {
+    id: "nytimes",
+    name: "NYTimes",
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml",
+  },
+  {
+    id: "washpost",
+    name: "WashingtonPost",
+    url: "https://feeds.washingtonpost.com/rss/world",
+  },
+  { id: "npr", name: "NPR", url: "https://feeds.npr.org/1004/rss.xml" },
+  {
+    id: "netblocks",
+    name: "NetBlocks (Mastodon)",
+    url: "https://mastodon.social/@netblocks.rss",
+  },
+  { id: "mehr", name: "Mehr News (FA)", url: "https://www.mehrnews.com/rss" },
+  {
+    id: "bbcpersian",
+    name: "BBC Persian",
+    url: "https://www.bbc.com/persian/index.xml",
+  },
+  {
+    id: "aljazeera",
+    name: "Al Jazeera",
+    url: "https://www.aljazeera.com/xml/rss/all.xml",
+  },
+  {
+    id: "entekhab",
+    name: "Entekhab (FA)",
+    url: "https://www.entekhab.ir/fa/rss/allnews",
+  },
+  { id: "correctiv", name: "CORRECTIV", url: "https://correctiv.org/feed/" },
+  {
+    id: "bellingcat",
+    name: "Bellingcat",
+    url: "https://www.bellingcat.com/feed/",
+  },
+  {
+    id: "amnesty",
+    name: "Amnesty International",
+    url: "https://www.amnesty.de/rss/laender/iran",
+  },
+  { id: "igfm", name: "IGFM", url: "https://www.igfm.de/feed/" },
+  { id: "hrw", name: "Human Rights Watch", url: "https://www.hrw.org/rss" },
+  {
+    id: "iranhr",
+    name: "Iran Human Rights",
+    url: "https://iranhr.net/en/rss/",
+  },
+  {
+    id: "radiofarda",
+    name: "Radio Farda (FA)",
+    url: "https://www.radiofarda.com/api/zrttpol-vomx-tpeoogpi",
+  },
+  {
+    id: "voapersian",
+    name: "VOA Persian (FA)",
+    url: "https://ir.voanews.com/api/zbtpil-vomx-tpeqiyp",
+  },
+  { id: "ncri", name: "NCRI", url: "https://www.ncr-iran.org/en/feed/" },
+  {
+    id: "pbsnewshour",
+    name: "PBS NewsHour",
+    url: "https://www.pbs.org/newshour/feeds/rss/world",
+  },
+  {
+    id: "crisisgroup",
+    name: "Crisis Group",
+    url: "https://www.crisisgroup.org/rss.xml",
+  },
+  {
+    id: "unnews",
+    name: "UN News",
+    url: "https://news.un.org/feed/subscribe/en/news/region/middle-east/feed/rss.xml",
+  },
 ];
 
 // HIGH: Directly Iran — 1 match = Iran-related
 const IRAN_TERMS_HIGH = [
-  'iran', 'iranian', 'iranisch', 'iranische', 'iranischen', 'iranischer',
-  'tehran', 'teheran', 'isfahan', 'natanz', 'fordo', 'bushehr', 'arak', 'evin', 'qom',
-  'khamenei', 'chamenei', 'raisi', 'pezeshkian', 'rouhani',
-  'irgc', 'revolutionsgard', 'revolution guard',
-  'jcpoa', 'atomabkommen',
-  'iran war',
+  "iran",
+  "iranian",
+  "iranisch",
+  "iranische",
+  "iranischen",
+  "iranischer",
+  "tehran",
+  "teheran",
+  "isfahan",
+  "natanz",
+  "fordo",
+  "bushehr",
+  "arak",
+  "evin",
+  "qom",
+  "khamenei",
+  "chamenei",
+  "raisi",
+  "pezeshkian",
+  "rouhani",
+  "irgc",
+  "revolutionsgard",
+  "revolution guard",
+  "jcpoa",
+  "atomabkommen",
+  "iran war",
   // Opposition & Protest — direkt Iran
-  'mojahedin', 'mek', 'pmoi', 'ncri', 'maryam rajavi', 'reza pahlavi',
-  'mahsa amini', 'jina amini',
-  'ایران', 'تهران', 'خامنه‌ای', 'سپاه', 'اصفهان', 'برجام', 'نیروهای بسیج',
-  'مجاهدین', 'مریم رجوی', 'مهسا امینی',
+  "mojahedin",
+  "mek",
+  "pmoi",
+  "ncri",
+  "maryam rajavi",
+  "reza pahlavi",
+  "mahsa amini",
+  "jina amini",
+  "ایران",
+  "تهران",
+  "خامنه‌ای",
+  "سپاه",
+  "اصفهان",
+  "برجام",
+  "نیروهای بسیج",
+  "مجاهدین",
+  "مریم رجوی",
+  "مهسا امینی",
 ];
 
 // MEDIUM: Iran-nah — 2 matches or 1 MEDIUM + 1 LOW = Iran-related
 const IRAN_TERMS_MEDIUM = [
-  'ayatollah', 'supreme leader', 'mullah',
-  'persian gulf', 'persisch', 'hormus', 'basij',
-  'hezbollah', 'hisbollah',
-  'nuclear deal', 'nuclear program',
+  "ayatollah",
+  "supreme leader",
+  "mullah",
+  "persian gulf",
+  "persisch",
+  "hormus",
+  "basij",
+  "hezbollah",
+  "hisbollah",
+  "nuclear deal",
+  "nuclear program",
   // Opposition & Protest — Iran-nah
-  'woman life freedom', 'frau leben freiheit', 'morality police', 'sittenpolizei',
-  'خلیج فارس', 'تحریم', 'ملا', 'هسته‌ای',
-  'زن زندگی آزادی', 'گشت ارشاد',
+  "woman life freedom",
+  "frau leben freiheit",
+  "morality police",
+  "sittenpolizei",
+  "خلیج فارس",
+  "تحریم",
+  "ملا",
+  "هسته‌ای",
+  "زن زندگی آزادی",
+  "گشت ارشاد",
 ];
 
 // LOW: Generisch — allein nicht ausreichend
 const IRAN_TERMS_LOW = [
-  'nuclear', 'sanctions', 'cyberattack', 'internet cut',
-  'shah', 'caspian', 'mossad', 'reform movement',
-  'watchdog', 'connectivity',
-  'شاه', 'موساد',
+  "nuclear",
+  "sanctions",
+  "cyberattack",
+  "internet cut",
+  "shah",
+  "caspian",
+  "mossad",
+  "reform movement",
+  "watchdog",
+  "connectivity",
+  "شاه",
+  "موساد",
 ];
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, If-None-Match, If-Modified-Since',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Content-Type, If-None-Match, If-Modified-Since",
 };
 
 const CACHE_TTL = 300; // 5 Minuten
@@ -119,41 +251,41 @@ export default {
     const url = new URL(request.url);
 
     // Preflight
-    if (request.method === 'OPTIONS') {
+    if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
     // ── Rate-Limiting ──
-    const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const clientIp = request.headers.get("CF-Connecting-IP") || "unknown";
     if (isRateLimited(clientIp)) {
-      return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
         status: 429,
         headers: {
           ...CORS_HEADERS,
-          'Content-Type': 'application/json',
-          'Retry-After': String(RATE_LIMIT_WINDOW),
+          "Content-Type": "application/json",
+          "Retry-After": String(RATE_LIMIT_WINDOW),
         },
       });
     }
 
     // ── Übersetzungs-Endpoint ──
-    if (url.pathname === '/translate' && request.method === 'POST') {
+    if (url.pathname === "/translate" && request.method === "POST") {
       return handleTranslate(request, env);
     }
 
     // ── Feed-Aggregator Endpoint ──
-    if (url.pathname === '/feeds/all' && request.method === 'GET') {
+    if (url.pathname === "/feeds/all" && request.method === "GET") {
       return handleAggregator(request, env, ctx);
     }
 
-    if (request.method !== 'GET') {
-      return jsonError(405, 'Only GET or POST /translate allowed');
+    if (request.method !== "GET") {
+      return jsonError(405, "Only GET or POST /translate allowed");
     }
 
-    const targetUrl = url.searchParams.get('url');
+    const targetUrl = url.searchParams.get("url");
 
     if (!targetUrl) {
-      return jsonError(400, 'Missing ?url= parameter');
+      return jsonError(400, "Missing ?url= parameter");
     }
 
     // URL validieren
@@ -161,7 +293,7 @@ export default {
     try {
       parsed = new URL(targetUrl);
     } catch {
-      return jsonError(400, 'Invalid URL');
+      return jsonError(400, "Invalid URL");
     }
 
     // Nur erlaubte Hosts
@@ -170,8 +302,8 @@ export default {
     }
 
     // Nur HTTP(S)
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      return jsonError(400, 'Only http/https URLs allowed');
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      return jsonError(400, "Only http/https URLs allowed");
     }
 
     // Cache prüfen (Cloudflare Cache API)
@@ -185,17 +317,17 @@ export default {
     // Feed abrufen – ETag/Last-Modified vom Client weiterleiten
     try {
       const upstreamHeaders = {
-        'User-Agent': 'IranNewsReader-Proxy/1.0',
-        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+        "User-Agent": "IranNewsReader-Proxy/1.0",
+        Accept: "application/rss+xml, application/xml, text/xml, */*",
       };
-      const clientEtag = request.headers.get('If-None-Match');
-      const clientModified = request.headers.get('If-Modified-Since');
-      if (clientEtag) upstreamHeaders['If-None-Match'] = clientEtag;
-      if (clientModified) upstreamHeaders['If-Modified-Since'] = clientModified;
+      const clientEtag = request.headers.get("If-None-Match");
+      const clientModified = request.headers.get("If-Modified-Since");
+      if (clientEtag) upstreamHeaders["If-None-Match"] = clientEtag;
+      if (clientModified) upstreamHeaders["If-Modified-Since"] = clientModified;
 
       const upstream = await fetch(targetUrl, {
         headers: upstreamHeaders,
-        redirect: 'follow',
+        redirect: "follow",
       });
 
       // 304 Not Modified direkt durchreichen
@@ -207,22 +339,25 @@ export default {
       }
 
       if (!upstream.ok) {
-        return jsonError(upstream.status, `Upstream returned ${upstream.status}`);
+        return jsonError(
+          upstream.status,
+          `Upstream returned ${upstream.status}`,
+        );
       }
 
       const body = await upstream.text();
 
       const responseHeaders = {
         ...CORS_HEADERS,
-        'Content-Type': upstream.headers.get('Content-Type') || 'text/xml',
-        'Cache-Control': `public, max-age=${CACHE_TTL}`,
-        'X-Proxy-Cache': 'MISS',
+        "Content-Type": upstream.headers.get("Content-Type") || "text/xml",
+        "Cache-Control": `public, max-age=${CACHE_TTL}`,
+        "X-Proxy-Cache": "MISS",
       };
       // ETag/Last-Modified vom Upstream durchreichen
-      const upstreamEtag = upstream.headers.get('ETag');
-      const upstreamModified = upstream.headers.get('Last-Modified');
-      if (upstreamEtag) responseHeaders['ETag'] = upstreamEtag;
-      if (upstreamModified) responseHeaders['Last-Modified'] = upstreamModified;
+      const upstreamEtag = upstream.headers.get("ETag");
+      const upstreamModified = upstream.headers.get("Last-Modified");
+      if (upstreamEtag) responseHeaders["ETag"] = upstreamEtag;
+      if (upstreamModified) responseHeaders["Last-Modified"] = upstreamModified;
 
       const response = new Response(body, {
         status: 200,
@@ -254,15 +389,18 @@ async function handleAggregator(request, env, ctx) {
       try {
         const upstream = await fetch(feed.url, {
           headers: {
-            'User-Agent': 'IranNewsReader-Proxy/1.0',
-            'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+            "User-Agent": "IranNewsReader-Proxy/1.0",
+            Accept: "application/rss+xml, application/xml, text/xml, */*",
           },
-          redirect: 'follow',
+          redirect: "follow",
           signal: AbortSignal.timeout(12000),
         });
 
         if (!upstream.ok) {
-          feedResults[feed.id] = { articles: [], error: `HTTP ${upstream.status}` };
+          feedResults[feed.id] = {
+            articles: [],
+            error: `HTTP ${upstream.status}`,
+          };
           return;
         }
 
@@ -272,16 +410,19 @@ async function handleAggregator(request, env, ctx) {
       } catch (err) {
         feedResults[feed.id] = { articles: [], error: err.message };
       }
-    })
+    }),
   );
 
-  const body = JSON.stringify({ feeds: feedResults, timestamp: new Date().toISOString() });
+  const body = JSON.stringify({
+    feeds: feedResults,
+    timestamp: new Date().toISOString(),
+  });
   const response = new Response(body, {
     status: 200,
     headers: {
       ...CORS_HEADERS,
-      'Content-Type': 'application/json',
-      'Cache-Control': `public, max-age=${CACHE_TTL}`,
+      "Content-Type": "application/json",
+      "Cache-Control": `public, max-age=${CACHE_TTL}`,
     },
   });
 
@@ -293,7 +434,7 @@ async function handleAggregator(request, env, ctx) {
 function hashCode(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0;
   }
   return Math.abs(hash);
@@ -301,42 +442,63 @@ function hashCode(str) {
 
 function isIranRelated(text) {
   const t = text.toLowerCase();
-  if (IRAN_TERMS_HIGH.some(term => t.includes(term))) return true;
-  const mediumCount = IRAN_TERMS_MEDIUM.filter(term => t.includes(term)).length;
+  if (IRAN_TERMS_HIGH.some((term) => t.includes(term))) return true;
+  const mediumCount = IRAN_TERMS_MEDIUM.filter((term) =>
+    t.includes(term),
+  ).length;
   if (mediumCount >= 2) return true;
-  const lowCount = IRAN_TERMS_LOW.filter(term => t.includes(term)).length;
+  const lowCount = IRAN_TERMS_LOW.filter((term) => t.includes(term)).length;
   if (mediumCount >= 1 && lowCount >= 1) return true;
   return false;
 }
 
 const HTML_ENTITIES = {
-  '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'",
-  '&ndash;': '–', '&mdash;': '—', '&laquo;': '«', '&raquo;': '»',
-  '&nbsp;': ' ', '&copy;': '©', '&reg;': '®', '&trade;': '™',
-  '&hellip;': '…', '&bull;': '•', '&middot;': '·',
-  '&lsquo;': '\u2018', '&rsquo;': '\u2019', '&ldquo;': '\u201C', '&rdquo;': '\u201D',
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&apos;": "'",
+  "&ndash;": "–",
+  "&mdash;": "—",
+  "&laquo;": "«",
+  "&raquo;": "»",
+  "&nbsp;": " ",
+  "&copy;": "©",
+  "&reg;": "®",
+  "&trade;": "™",
+  "&hellip;": "…",
+  "&bull;": "•",
+  "&middot;": "·",
+  "&lsquo;": "\u2018",
+  "&rsquo;": "\u2019",
+  "&ldquo;": "\u201C",
+  "&rdquo;": "\u201D",
 };
 
 function decodeEntities(str) {
-  return str
-    .replace(/&(?:#(\d+)|#x([0-9a-fA-F]+)|[a-zA-Z]+);/g, (entity, dec, hex) => {
+  return str.replace(
+    /&(?:#(\d+)|#x([0-9a-fA-F]+)|[a-zA-Z]+);/g,
+    (entity, dec, hex) => {
       if (dec) return String.fromCodePoint(Number(dec));
       if (hex) return String.fromCodePoint(parseInt(hex, 16));
       return HTML_ENTITIES[entity] || entity;
-    });
+    },
+  );
 }
 
 function getElText(el, tag) {
   // Cloudflare Workers haben keinen DOMParser, daher Regex-basiert
-  const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, 'i');
+  const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i");
   const match = el.match(regex);
-  if (!match) return '';
+  if (!match) return "";
   return decodeEntities(
     match[1]
-      .replace(/<!\[CDATA\[|\]\]>/g, '')
-      .replace(/<[^>]+>/g, '')
-      .trim()
-  ).replace(/<[^>]+>/g, '').trim();
+      .replace(/<!\[CDATA\[|\]\]>/g, "")
+      .replace(/<[^>]+>/g, "")
+      .trim(),
+  )
+    .replace(/<[^>]+>/g, "")
+    .trim();
 }
 
 function parseXmlToArticles(xmlText, feed) {
@@ -347,28 +509,49 @@ function parseXmlToArticles(xmlText, feed) {
 
   while ((match = itemRegex.exec(xmlText)) !== null) {
     const block = match[1];
-    let title = getElText(block, 'title');
-    const desc = getElText(block, 'description') || getElText(block, 'summary') || getElText(block, 'content');
+    let title = getElText(block, "title");
+    const desc =
+      getElText(block, "description") ||
+      getElText(block, "summary") ||
+      getElText(block, "content");
 
-    let link = getElText(block, 'link');
+    let link = getElText(block, "link");
     if (!link) {
       // Atom-style <link href="..."/>
-      const linkMatch = block.match(/<link[^>]*href=["']([^"']+)["'][^>]*\/?>/i);
+      const linkMatch = block.match(
+        /<link[^>]*href=["']([^"']+)["'][^>]*\/?>/i,
+      );
       if (linkMatch) link = linkMatch[1];
     }
 
-    const date = getElText(block, 'pubDate') || getElText(block, 'published') || getElText(block, 'updated');
+    const date =
+      getElText(block, "pubDate") ||
+      getElText(block, "published") ||
+      getElText(block, "updated");
 
     if (!title) {
-      const plain = desc.replace(/<[^>]+>/g, '').trim();
-      title = plain.split('\n').map(s => s.trim()).filter(Boolean).shift() || `${feed.name} Update`;
+      const plain = desc.replace(/<[^>]+>/g, "").trim();
+      title =
+        plain
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .shift() || `${feed.name} Update`;
     }
 
-    const combined = title + ' ' + desc;
+    const combined = title + " " + desc;
     if (!title || !isIranRelated(combined)) continue;
 
-    const id = `${feed.id}-${hashCode(title + '|' + (link || ''))}`;
-    articles.push({ id, title, desc, link, date, source: feed.id, sourceName: feed.name });
+    const id = `${feed.id}-${hashCode(title + "|" + (link || ""))}`;
+    articles.push({
+      id,
+      title,
+      desc,
+      link,
+      date,
+      source: feed.id,
+      sourceName: feed.name,
+    });
   }
 
   return articles;
@@ -382,11 +565,11 @@ async function handleTranslate(request, env) {
   try {
     body = await request.json();
   } catch {
-    return jsonError(400, 'Invalid JSON body');
+    return jsonError(400, "Invalid JSON body");
   }
 
-  const { text, source = 'fa', target = 'de' } = body;
-  if (!text || typeof text !== 'string') {
+  const { text, source = "fa", target = "de" } = body;
+  if (!text || typeof text !== "string") {
     return jsonError(400, 'Missing "text" field');
   }
 
@@ -396,7 +579,7 @@ async function handleTranslate(request, env) {
     const translations = [];
 
     for (const chunk of chunks) {
-      const result = await env.AI.run('@cf/meta/m2m100-1.2b', {
+      const result = await env.AI.run("@cf/meta/m2m100-1.2b", {
         text: chunk,
         source_lang: source,
         target_lang: target,
@@ -404,9 +587,12 @@ async function handleTranslate(request, env) {
       translations.push(result.translated_text);
     }
 
-    return new Response(JSON.stringify({ translated_text: translations.join(' ') }), {
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ translated_text: translations.join(" ") }),
+      {
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+      },
+    );
   } catch (err) {
     return jsonError(502, `Translation failed: ${err.message}`);
   }
@@ -422,8 +608,8 @@ function splitTextIntoChunks(text, maxLen) {
       break;
     }
     // Am letzten Satzendezeichen vor maxLen schneiden
-    let cut = remaining.lastIndexOf('.', maxLen);
-    if (cut < maxLen * 0.3) cut = remaining.lastIndexOf(' ', maxLen);
+    let cut = remaining.lastIndexOf(".", maxLen);
+    if (cut < maxLen * 0.3) cut = remaining.lastIndexOf(" ", maxLen);
     if (cut < maxLen * 0.3) cut = maxLen;
     chunks.push(remaining.slice(0, cut + 1).trim());
     remaining = remaining.slice(cut + 1).trim();
@@ -436,7 +622,7 @@ function jsonError(status, message) {
     status,
     headers: {
       ...CORS_HEADERS,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 }

@@ -1,49 +1,183 @@
-.tag-tagesschau { background: rgba(23,90,120,.35); color: #7cc8e8; }
-.tag-spiegel    { background: rgba(200,80,0,.3);   color: #f0a060; }
-.tag-zdf        { background: rgba(120,40,200,.3);  color: #c088f8; }
-.tag-zeit       { background: rgba(200,20,20,.3);   color: #f08080; }
-.tag-nytimes    { background: rgba(0,65,125,.25);   color: #7ebcff; }
-.tag-washpost   { background: rgba(20,40,80,.25);   color: #aad8ff; }
-.tag-npr        { background: rgba(80,140,30,.25);   color: #c8ff91; }
-.tag-mehr       { background: rgba(160,25,120,.25);  color: #e9a8e3; }
-.tag-bbcpersian { background: rgba(110,50,130,.22);  color: #d4abff; }
-.tag-iranintl   { background: rgba(180,20,40,.25);   color: #ff8fa0; }
-.tag-netblocks  { background: rgba(120,80,0,.25);    color: #f9bf74; }
-.tag-aljazeera  { background: rgba(210,150,0,.25);   color: #f5c842; }
-.tag-entekhab   { background: rgba(0,140,80,.25);    color: #5ee8a0; }
-.tag-correctiv  { background: rgba(0,100,170,.3);    color: #6ec4f0; }
-.tag-bellingcat { background: rgba(200,160,0,.3);    color: #f0d060; }
-.tag-amnesty    { background: rgba(220,180,0,.3);    color: #f5d442; }
-.tag-igfm       { background: rgba(0,130,60,.28);    color: #50d890; }
-.tag-hrw        { background: rgba(120,60,180,.28);   color: #c490f0; }
-.tag-iranhr     { background: rgba(200,50,80,.28);    color: #f08090; }
-.tag-radiofarda { background: rgba(0,120,180,.28);     color: #60c0f0; }
-.tag-voapersian { background: rgba(30,80,160,.28);     color: #7ea8f0; }
-.tag-ncri       { background: rgba(180,140,0,.28);     color: #e8c840; }
-.tag-radiozamaneh { background: rgba(100,40,160,.28);  color: #b880e8; }
-.tag-default    { background: rgba(100,100,100,.2);  color: #aaa; }
+.tag-tagesschau {
+  background: rgba(23, 90, 120, 0.35);
+  color: #7cc8e8;
+}
+.tag-spiegel {
+  background: rgba(200, 80, 0, 0.3);
+  color: #f0a060;
+}
+.tag-zdf {
+  background: rgba(120, 40, 200, 0.3);
+  color: #c088f8;
+}
+.tag-zeit {
+  background: rgba(200, 20, 20, 0.3);
+  color: #f08080;
+}
+.tag-nytimes {
+  background: rgba(0, 65, 125, 0.25);
+  color: #7ebcff;
+}
+.tag-washpost {
+  background: rgba(20, 40, 80, 0.25);
+  color: #aad8ff;
+}
+.tag-npr {
+  background: rgba(80, 140, 30, 0.25);
+  color: #c8ff91;
+}
+.tag-mehr {
+  background: rgba(160, 25, 120, 0.25);
+  color: #e9a8e3;
+}
+.tag-bbcpersian {
+  background: rgba(110, 50, 130, 0.22);
+  color: #d4abff;
+}
+.tag-iranintl {
+  background: rgba(180, 20, 40, 0.25);
+  color: #ff8fa0;
+}
+.tag-netblocks {
+  background: rgba(120, 80, 0, 0.25);
+  color: #f9bf74;
+}
+.tag-aljazeera {
+  background: rgba(210, 150, 0, 0.25);
+  color: #f5c842;
+}
+.tag-entekhab {
+  background: rgba(0, 140, 80, 0.25);
+  color: #5ee8a0;
+}
+.tag-correctiv {
+  background: rgba(0, 100, 170, 0.3);
+  color: #6ec4f0;
+}
+.tag-bellingcat {
+  background: rgba(200, 160, 0, 0.3);
+  color: #f0d060;
+}
+.tag-amnesty {
+  background: rgba(220, 180, 0, 0.3);
+  color: #f5d442;
+}
+.tag-igfm {
+  background: rgba(0, 130, 60, 0.28);
+  color: #50d890;
+}
+.tag-hrw {
+  background: rgba(120, 60, 180, 0.28);
+  color: #c490f0;
+}
+.tag-iranhr {
+  background: rgba(200, 50, 80, 0.28);
+  color: #f08090;
+}
+.tag-radiofarda {
+  background: rgba(0, 120, 180, 0.28);
+  color: #60c0f0;
+}
+.tag-voapersian {
+  background: rgba(30, 80, 160, 0.28);
+  color: #7ea8f0;
+}
+.tag-ncri {
+  background: rgba(180, 140, 0, 0.28);
+  color: #e8c840;
+}
+.tag-pbsnewshour {
+  background: rgba(110, 10, 20, 0.28);
+  color: #e86070;
+}
+.tag-crisisgroup {
+  background: rgba(0, 120, 100, 0.28);
+  color: #40e0c8;
+}
+.tag-unnews {
+  background: rgba(0, 100, 170, 0.3);
+  color: #60c8ff;
+}
+.tag-default {
+  background: rgba(100, 100, 100, 0.2);
+  color: #aaa;
+}
 
-.dot-tagesschau { background: #7cc8e8; }
-.dot-spiegel    { background: #f0a060; }
-.dot-zdf        { background: #c088f8; }
-.dot-zeit       { background: #f08080; }
-.dot-nytimes    { background: #7ebcff; }
-.dot-washpost   { background: #aad8ff; }
-.dot-npr        { background: #c8ff91; }
-.dot-netblocks  { background: #f9bf74; }
-.dot-mehr       { background: #e9a8e3; }
-.dot-bbcpersian { background: #d4abff; }
-.dot-iranintl   { background: #ff8fa0; }
-.dot-aljazeera  { background: #f5c842; }
-.dot-entekhab   { background: #5ee8a0; }
-.dot-correctiv  { background: #6ec4f0; }
-.dot-bellingcat { background: #f0d060; }
-.dot-amnesty    { background: #f5d442; }
-.dot-igfm       { background: #50d890; }
-.dot-hrw        { background: #c490f0; }
-.dot-iranhr     { background: #f08090; }
-.dot-radiofarda { background: #60c0f0; }
-.dot-voapersian { background: #7ea8f0; }
-.dot-ncri       { background: #e8c840; }
-.dot-radiozamaneh { background: #b880e8; }
-.dot-default    { background: #888; }
+.dot-tagesschau {
+  background: #7cc8e8;
+}
+.dot-spiegel {
+  background: #f0a060;
+}
+.dot-zdf {
+  background: #c088f8;
+}
+.dot-zeit {
+  background: #f08080;
+}
+.dot-nytimes {
+  background: #7ebcff;
+}
+.dot-washpost {
+  background: #aad8ff;
+}
+.dot-npr {
+  background: #c8ff91;
+}
+.dot-netblocks {
+  background: #f9bf74;
+}
+.dot-mehr {
+  background: #e9a8e3;
+}
+.dot-bbcpersian {
+  background: #d4abff;
+}
+.dot-iranintl {
+  background: #ff8fa0;
+}
+.dot-aljazeera {
+  background: #f5c842;
+}
+.dot-entekhab {
+  background: #5ee8a0;
+}
+.dot-correctiv {
+  background: #6ec4f0;
+}
+.dot-bellingcat {
+  background: #f0d060;
+}
+.dot-amnesty {
+  background: #f5d442;
+}
+.dot-igfm {
+  background: #50d890;
+}
+.dot-hrw {
+  background: #c490f0;
+}
+.dot-iranhr {
+  background: #f08090;
+}
+.dot-radiofarda {
+  background: #60c0f0;
+}
+.dot-voapersian {
+  background: #7ea8f0;
+}
+.dot-ncri {
+  background: #e8c840;
+}
+.dot-pbsnewshour {
+  background: #e86070;
+}
+.dot-crisisgroup {
+  background: #40e0c8;
+}
+.dot-unnews {
+  background: #60c8ff;
+}
+.dot-default {
+  background: #888;
+}

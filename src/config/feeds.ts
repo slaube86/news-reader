@@ -84,9 +84,19 @@ export const FEEDS: FeedConfig[] = [
   },
   { id: "ncri", name: "NCRI", url: "https://www.ncr-iran.org/en/feed/" },
   {
-    id: "radiozamaneh",
-    name: "Radio Zamaneh (FA)",
-    url: "https://www.radiozamaneh.com/feed/",
+    id: "pbsnewshour",
+    name: "PBS NewsHour",
+    url: "https://www.pbs.org/newshour/feeds/rss/world",
+  },
+  {
+    id: "crisisgroup",
+    name: "Crisis Group",
+    url: "https://www.crisisgroup.org/rss.xml",
+  },
+  {
+    id: "unnews",
+    name: "UN News",
+    url: "https://news.un.org/feed/subscribe/en/news/region/middle-east/feed/rss.xml",
   },
 ];
 
@@ -97,7 +107,6 @@ export const FARSI_SOURCES = [
   "entekhab",
   "radiofarda",
   "voapersian",
-  "radiozamaneh",
 ] as const;
 
 /**
@@ -121,7 +130,6 @@ export const SOURCE_LANG: Record<string, "de" | "en" | "fa"> = {
   entekhab: "fa",
   radiofarda: "fa",
   voapersian: "fa",
-  radiozamaneh: "fa",
   // 🇺🇸 English
   nytimes: "en",
   washpost: "en",
@@ -132,4 +140,7 @@ export const SOURCE_LANG: Record<string, "de" | "en" | "fa"> = {
   hrw: "en",
   iranhr: "en",
   ncri: "en",
+  pbsnewshour: "en",
+  crisisgroup: "en",
+  unnews: "en",
 };

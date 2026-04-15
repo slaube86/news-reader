@@ -15,13 +15,13 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 | TypeScript | 5.9 | Type safety |
 | Leaflet.js | 1.9 | Interactive world map with heatmap markers |
 | ESLint | 10.1 | Linting (flat config with `eslint-plugin-vue` + `typescript-eslint`) |
-| Cloudflare Workers | — | CORS proxy, feed aggregator & locale-aware translation DE/EN/FA (Workers AI) |
+| Cloudflare Workers | — | CORS proxy, 25-feed aggregator & locale-aware translation DE/EN/FA (Workers AI) |
 | Dexie.js | 4.x | IndexedDB wrapper with indexes & typed queries |
 | IndexedDB | — | Offline article storage (60 days, via Dexie.js) |
 
 ## Features
 
-- Supports 23 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat, Amnesty International, IGFM, Human Rights Watch, Iran Human Rights, Radio Farda (FA), VOA Persian (FA), NCRI, Radio Zamaneh (FA).
+- Supports 25 sources: Tagesschau, Spiegel, ZDF, Zeit, NYTimes, Washington Post, NPR, NetBlocks, Mehr News (FA), BBC Persian, Iran International, Al Jazeera, Entekhab (FA), CORRECTIV, Bellingcat, Amnesty International, IGFM, Human Rights Watch, Iran Human Rights, Radio Farda (FA), VOA Persian (FA), NCRI, PBS NewsHour, Crisis Group, UN News.
 - Filter by source, keyword search, sorting (date/source).
 - Auto-refresh every 15 minutes with countdown display.
 - Mobile sidebar with slide-in/slide-out, overlay, and auto-close on feed selection.
@@ -89,7 +89,7 @@ news-reader/
 │   │   ├── useIndexedDB.ts    # Legacy IndexedDB (kept for migration)
 │   │   └── useTranslation.ts  # Locale-aware translation via Workers AI (source lang → user's lang)
 │   ├── config/
-│   │   ├── feeds.ts           # 23 feed definitions + SOURCE_LANG map (de/en/fa per feed)
+│   │   ├── feeds.ts           # 25 feed definitions + SOURCE_LANG map (de/en/fa per feed)
 │   │   ├── iranTerms.ts       # 3-tier Iran keywords (HIGH/MEDIUM/LOW, DE/EN/FA)
 │   │   ├── constants.ts       # Proxy URLs, DB config, timings, adaptive batching, stopwords
 │   │   ├── countries.ts       # 45 countries with multilingual terms + coordinates
@@ -157,7 +157,7 @@ npm run dev
 The app uses a custom Cloudflare Worker as a CORS proxy, feed aggregator, and translation service:
 
 - **RSS Proxy** (`GET /?url=...`): Forwards RSS feed requests with an allowlist (known feed domains only), Cloudflare Cache (5 min TTL), CORS headers, and ETag/Last-Modified passthrough for conditional requests.
-- **Feed Aggregator** (`GET /feeds/all`): Fetches all 23 feeds in parallel server-side, parses XML to JSON, decodes HTML entities, filters for Iran-related articles (3-tier scoring: HIGH/MEDIUM/LOW), and returns a single cached response. Reduces client requests from 23 to 1.
+- **Feed Aggregator** (`GET /feeds/all`): Fetches all 25 feeds in parallel server-side, parses XML to JSON, decodes HTML entities, filters for Iran-related articles (3-tier scoring: HIGH/MEDIUM/LOW), and returns a single cached response. Reduces client requests from 25 to 1.
 - **Translation** (`POST /translate`): Translates article text between German, English, and Farsi via Cloudflare Workers AI (`@cf/meta/m2m100-1.2b`). Accepts a `source` and `target` language code in the request body — both are determined dynamically by the client. Long texts are automatically split into chunks at sentence boundaries.
 - **Rate-Limiting**: IP-based throttling (60 requests/minute) to prevent abuse.
 
@@ -202,7 +202,7 @@ Then update the worker URL in `src/config/constants.ts` under `PROXY_PRIMARY`.
 ## Notes
 
 - CORS Proxy: Custom Cloudflare Worker with allowlist as primary proxy, `allorigins.win` as fallback. Both are raced in parallel.
-- Feed Aggregator: Worker endpoint `/feeds/all` loads all feeds server-side in one request.
+- Feed Aggregator: Worker endpoint `/feeds/all` loads all 25 feeds server-side in one request.
 - Translation: Cloudflare Workers AI (free tier: 10,000 neurons/day). Source and target language are fully dynamic — no language pair is hardcoded.
 - Rate-Limiting: Worker limits each IP to 60 requests per minute.
 - If individual feeds fail, the app displays error details in the sidebar.
