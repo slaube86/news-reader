@@ -9,13 +9,33 @@
       </div>
       <div v-if="highlight" class="art-title" v-html="highlightedTitle"></div>
       <div v-else class="art-title">{{ article.title }}</div>
+
       <div
-        v-if="article.desc && highlight"
-        class="art-desc"
-        v-html="highlightedDesc"
-      ></div>
-      <div v-else-if="article.desc" class="art-desc">{{ article.desc }}</div>
+        v-if="article.desc"
+        class="art-desc-wrap"
+        :class="{ 'is-expanded': expanded }"
+      >
+        <div
+          v-if="article.desc && highlight"
+          ref="descRef"
+          class="art-desc"
+          v-html="highlightedDesc"
+        ></div>
+        <div v-else-if="article.desc" ref="descRef" class="art-desc">
+          {{ article.desc }}
+        </div>
+        <div v-if="!expanded && needsExpand" class="art-desc-fade"></div>
+      </div>
     </a>
+
+    <button
+      v-if="needsExpand"
+      class="art-expand-btn"
+      @click.stop="expanded = !expanded"
+    >
+      {{ expanded ? t("card.showLess") : t("card.showMore") }}
+    </button>
+
     <template v-if="isTranslatable">
       <button class="art-translate-btn" @click.prevent.stop="doTranslate">
         {{ t("card.translate", { lang: targetLangLabel }) }}
@@ -26,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import type { Article } from "@/types/article";
 import { SOURCE_LANG } from "@/config/feeds";
 import { formatDate } from "@/utils/formatters";
@@ -50,6 +70,19 @@ const props = defineProps<{
 
 const translation = ref("");
 
+// ── Collapsible description ──────────────────────────────────────────────────
+const DESC_MAX_HEIGHT = 150; // px — keep in sync with CSS
+const expanded = ref(false);
+const needsExpand = ref(false);
+const descRef = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  if (descRef.value) {
+    needsExpand.value = descRef.value.scrollHeight > DESC_MAX_HEIGHT;
+  }
+});
+
+// ── Translation ───────────────────────────────────────────────────────────────
 /** The content language of this article's source feed. Falls back to 'en' for unknown sources. */
 const articleSourceLang = computed(
   () => SOURCE_LANG[props.article.source] ?? "en",

@@ -39,6 +39,8 @@ const messages: Record<string, Record<string, string>> = {
     "card.translate": "Übersetzen → {lang}",
     "card.translating": "Übersetzung wird geladen...",
     "card.translationFailed": "Übersetzung fehlgeschlagen",
+    "card.showMore": "Mehr anzeigen",
+    "card.showLess": "Weniger",
 
     // DailySummary
     "summary.title": "Daily Recap",
@@ -134,6 +136,8 @@ const messages: Record<string, Record<string, string>> = {
     "card.translate": "Translate → {lang}",
     "card.translating": "Translating…",
     "card.translationFailed": "Translation failed",
+    "card.showMore": "Show more",
+    "card.showLess": "Show less",
 
     // DailySummary
     "summary.title": "Daily Recap",
