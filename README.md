@@ -14,6 +14,7 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 | Vue Router | 4.6 | Routing (prepared for future expansion) |
 | TypeScript | 5.9 | Type safety |
 | Leaflet.js | 1.9 | Interactive world map with heatmap markers |
+| Chart.js | 4.x | Dual-axis line chart in rice price dialog (lazy-loaded) |
 | ESLint | 10.1 | Linting (flat config with `eslint-plugin-vue` + `typescript-eslint`) |
 | Cloudflare Workers | — | CORS proxy, 25-feed aggregator & locale-aware translation DE/EN/FA (Workers AI) |
 | Dexie.js | 4.x | IndexedDB wrapper with indexes & typed queries |
@@ -38,6 +39,7 @@ A lightweight, responsive web reader for Iran-related news from various RSS feed
 
 - **Infinite Scroll Pagination**: Articles load in pages of 50 with automatic loading via Intersection Observer.
 - **Daily Summary**: Collapsible card above the article list (visible in "Heute" view) showing top sources, mentioned countries (with flags), trending keywords, and time distribution — all computed client-side.
+- **Rice Price Widget**: Compact card at the bottom of the Daily Summary showing the current 1 kg world market rice price in EUR and IRR. Clicking opens a full modal with a Chart.js dual-axis line chart covering the last 12 months. Price basis: Numbeo market estimate ($3.25/kg, manually updated every ~2 weeks). EUR conversion via Frankfurter API; IRR/EUR live rate via the [SamadiPour bonbast.com GitHub archive](https://github.com/SamadiPour/rial-exchange-rates-archive) (daily, CORS-free via jsDelivr CDN). All three sources are fetched in parallel with `Promise.allSettled`; individual source failures fall back gracefully. Results are cached in `localStorage` for 24 hours. The "vs. previous month" label shows the actual month name (e.g. "vs. Apr '26") to make clear which data point is being compared.
 - **Interactive World Map**: Toggle map view via "🗺️ Karte" button. Displays an interactive Leaflet.js map with circle markers sized by article count per country. 45 countries with multilingual keyword detection (German, English, Farsi). Sidebar shows country list with article counts; clicking a country flies the map to its location and shows a detail panel with source breakdown and article links.
 - **Welcome Modal**: First-visit welcome dialog with typewriter animation explaining the project's motivation. Dismissible with "Don't show again" checkbox (persisted in localStorage). Includes GitHub link.
 - **Internationalization (i18n)**: All UI texts automatically switch between German and English based on `navigator.language`. Central translation system via `useI18n` composable with ~60 translation keys and parameter interpolation.
@@ -76,6 +78,8 @@ news-reader/
 │   │   ├── ArticleList.vue    # Article rendering (chronological/grouped)
 │   │   ├── ArticleCard.vue    # Single article with locale-aware translate button
 │   │   ├── DailySummary.vue   # Collapsible daily summary card (sources, countries, keywords, timeline)
+│   │   ├── RicePriceWidget.vue  # Compact rice price card with SVG sparkline (opens dialog)
+│   │   ├── RicePriceDialog.vue  # Full modal with Chart.js dual-axis EUR/IRR line chart
 │   │   ├── LoadingState.vue   # Loading/empty/offline state
 │   │   ├── MapView.vue        # Interactive Leaflet.js world map with country sidebar
 │   │   ├── WelcomeModal.vue   # First-visit welcome dialog with typewriter animation
@@ -87,6 +91,7 @@ news-reader/
 │   │   ├── useFeedFetcher.ts  # Parallel proxy fetch, ETag cache, aggregator
 │   │   ├── useI18n.ts         # i18n system (DE/EN UI) + translationLang (DE/EN/FA) from navigator.language
 │   │   ├── useIndexedDB.ts    # Legacy IndexedDB (kept for migration)
+│   │   ├── useRicePrice.ts    # Rice price pipeline: Numbeo × Frankfurter × bonbast; singleton state + 24h cache
 │   │   └── useTranslation.ts  # Locale-aware translation via Workers AI (source lang → user's lang)
 │   ├── config/
 │   │   ├── feeds.ts           # 25 feed definitions + SOURCE_LANG map (de/en/fa per feed)
@@ -97,6 +102,7 @@ news-reader/
 │   ├── types/
 │   │   ├── article.ts         # Article interface
 │   │   ├── feed.ts            # FeedConfig interface
+│   │   ├── ricePrice.ts       # RicePricePoint & RicePriceCache interfaces
 │   │   └── toast.ts           # Toast interface
 │   ├── utils/
 │   │   ├── formatters.ts      # Date/time formatting (de-DE)
