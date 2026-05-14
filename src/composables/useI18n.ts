@@ -76,6 +76,17 @@ const messages: Record<string, Record<string, string>> = {
     "time.noon": "Mittag",
     "time.evening": "Abend",
 
+    // RicePriceWidget / RicePriceDialog
+    "rice.title": "Reis (1 kg) · Weltmarkt",
+    "rice.loading": "Preisdaten werden geladen…",
+    "rice.error": "Daten nicht verfügbar.",
+    "rice.details": "Details",
+    "rice.dialog.title": "Reis – 1 kg Weltmarktpreis",
+    "rice.dialog.subtitle": "Letzte 12 Monate · Numbeo-Schätzwert $3,25/kg × Live-Wechselkurse",
+    "rice.dialog.latest": "Aktueller Preis",
+    "rice.dialog.approxNote": "(Näherungswert)",
+    "rice.dialog.source": "Quelle",
+
     // feeds store
     "feeds.noIranArticles": "Keine passenden Iran-Artikel gefunden",
     "feeds.updated": "{name} aktualisiert ({n} Artikel)",
@@ -172,6 +183,17 @@ const messages: Record<string, Record<string, string>> = {
     "time.morning": "Morning",
     "time.noon": "Afternoon",
     "time.evening": "Evening",
+
+    // RicePriceWidget / RicePriceDialog
+    "rice.title": "Rice (1 kg) · World Market",
+    "rice.loading": "Loading price data…",
+    "rice.error": "Data unavailable.",
+    "rice.details": "Details",
+    "rice.dialog.title": "Rice – 1 kg World Market Price",
+    "rice.dialog.subtitle": "Last 12 months · Numbeo estimate $3.25/kg × live exchange rates",
+    "rice.dialog.latest": "Current price",
+    "rice.dialog.approxNote": "(approximate)",
+    "rice.dialog.source": "Source",
 
     // feeds store
     "feeds.noIranArticles": "No matching Iran articles found",
