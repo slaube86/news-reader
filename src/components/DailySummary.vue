@@ -18,9 +18,13 @@
             v-for="s in sourceRanking"
             :key="s.source"
             class="chip"
-            :class="[`tag-${s.source}`, { 'chip--hidden': articlesStore.hiddenSources.has(s.source) }]"
+            :class="[
+              `tag-${s.source}`,
+              { 'chip--hidden': articlesStore.hiddenSources.has(s.source) },
+            ]"
             @click="articlesStore.toggleHiddenSource(s.source)"
-          >{{ s.name }} ({{ s.count }})</span>
+            >{{ s.name }} ({{ s.count }})</span
+          >
         </div>
       </section>
 
@@ -84,71 +88,125 @@
       <section v-if="dailySentiment.length > 1" class="summary-section">
         <h4 class="section-label">
           {{ t("summary.tendency") }}
-          <span class="tendency-badge" :class="tendencyClass">{{ tendencyLabel }}</span>
+          <span class="tendency-badge" :class="tendencyClass">{{
+            tendencyLabel
+          }}</span>
         </h4>
 
         <!-- Legend -->
         <div class="tendency-legend">
           <span class="legend-item">
-            <span class="legend-swatch" style="background: var(--sentiment-hostile)"></span>
+            <span
+              class="legend-swatch"
+              style="background: var(--sentiment-hostile)"
+            ></span>
             {{ t("summary.tendencyEsc") }}
           </span>
           <span class="legend-item">
-            <span class="legend-swatch" style="background: var(--sentiment-neutral)"></span>
+            <span
+              class="legend-swatch"
+              style="background: var(--sentiment-neutral)"
+            ></span>
             {{ t("summary.tendencyNeutral") }}
           </span>
           <span class="legend-item">
-            <span class="legend-swatch" style="background: var(--sentiment-peaceful)"></span>
+            <span
+              class="legend-swatch"
+              style="background: var(--sentiment-peaceful)"
+            ></span>
             {{ t("summary.tendencyDesc") }}
           </span>
           <span class="legend-hint">{{ t("summary.tendencyHint") }}</span>
         </div>
 
         <!-- 14-day line chart -->
-        <div class="tendency-chart-wrap" @touchstart="hideTooltip">
-          <svg class="tendency-chart" :viewBox="`0 0 ${CW} ${CH}`" width="100%">
-            <defs>
-              <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25"/>
-                <stop :offset="CZERO_GRAD" stop-color="#22c55e" stop-opacity="0"/>
-                <stop :offset="CZERO_GRAD" stop-color="#c8392b" stop-opacity="0"/>
-                <stop offset="100%" stop-color="#c8392b" stop-opacity="0.25"/>
-              </linearGradient>
-            </defs>
-            <line :x1="CL" :y1="CZERO" :x2="CR" :y2="CZERO"
-                  stroke="rgba(255,255,255,0.1)" stroke-width="0.5" stroke-dasharray="3,3"/>
-            <path :d="chartArea" fill="url(#sg)"/>
-            <polyline :points="chartPolyline" fill="none"
-                      stroke="rgba(255,255,255,0.45)" stroke-width="1.5"
-                      stroke-linejoin="round" stroke-linecap="round"/>
-            <circle
-              v-for="(day, i) in dailySentiment" :key="day.date"
-              :cx="cx(i, dailySentiment.length)" :cy="cy(day.score)"
-              r="4" :fill="sentimentColor(day.score)"
-              class="chart-dot"
-              @mouseenter="showTooltip(day, i)"
-              @mouseleave="hideTooltip"
-              @touchstart.stop.prevent="toggleTooltip(day, i)"
-            />
-            <text v-for="tick in chartTicks" :key="tick.x"
-                  :x="tick.x" :y="CH - 1"
-                  text-anchor="middle" font-size="7" fill="var(--text3)">{{ tick.label }}</text>
-          </svg>
+        <div class="tendency-chart-outer">
+          <div class="tendency-chart-wrap" @touchstart="hideTooltip">
+            <svg class="tendency-chart" :viewBox="`0 0 ${CW} ${CH}`" width="100%">
+              <defs>
+                <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25" />
+                  <stop
+                    :offset="CZERO_GRAD"
+                    stop-color="#22c55e"
+                    stop-opacity="0"
+                  />
+                  <stop
+                    :offset="CZERO_GRAD"
+                    stop-color="#c8392b"
+                    stop-opacity="0"
+                  />
+                  <stop offset="100%" stop-color="#c8392b" stop-opacity="0.25" />
+                </linearGradient>
+              </defs>
+              <line
+                :x1="CL"
+                :y1="CZERO"
+                :x2="CR"
+                :y2="CZERO"
+                stroke="rgba(255,255,255,0.1)"
+                stroke-width="0.5"
+                stroke-dasharray="3,3"
+              />
+              <path :d="chartArea" fill="url(#sg)" />
+              <polyline
+                :points="chartPolyline"
+                fill="none"
+                stroke="rgba(255,255,255,0.45)"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+              <circle
+                v-for="(day, i) in dailySentiment"
+                :key="day.date"
+                :cx="cx(i, dailySentiment.length)"
+                :cy="cy(day.score)"
+                r="4"
+                :fill="sentimentColor(day.score)"
+                class="chart-dot"
+                @mouseenter="showTooltip(day, i)"
+                @mouseleave="hideTooltip"
+                @touchstart.stop.prevent="toggleTooltip(day, i)"
+              />
+              <text
+                v-for="tick in chartTicks"
+                :key="tick.x"
+                :x="tick.x"
+                :y="CH - 1"
+                text-anchor="middle"
+                font-size="7"
+                fill="var(--text3)"
+              >
+                {{ tick.label }}
+              </text>
+            </svg>
+          </div>
 
-          <!-- Fancy tooltip -->
+          <!-- Fancy tooltip – außerhalb des Scroll-Containers, damit overflow-x nicht clippt -->
           <div v-if="activeTooltip" class="chart-tooltip" :style="tooltipStyle">
             <div class="ct-date">{{ activeTooltip.label }}</div>
-            <div class="ct-score" :style="{ color: sentimentColor(activeTooltip.score) }">
-              {{ activeTooltip.score > 0 ? '+' : '' }}{{ (activeTooltip.score * 100).toFixed(0) }}
+            <div
+              class="ct-score"
+              :style="{ color: sentimentColor(activeTooltip.score) }"
+            >
+              {{ activeTooltip.score > 0 ? "+" : ""
+              }}{{ (activeTooltip.score * 100).toFixed(0) }}
               <span class="ct-score-label">Score</span>
             </div>
             <div class="ct-divider"></div>
             <div class="ct-stat">
-              <span class="ct-swatch" style="background: var(--sentiment-hostile)"></span>
+              <span
+                class="ct-swatch"
+                style="background: var(--sentiment-hostile)"
+              ></span>
               {{ activeTooltip.hostileCount }} feindlich
             </div>
             <div class="ct-stat">
-              <span class="ct-swatch" style="background: var(--sentiment-peaceful)"></span>
+              <span
+                class="ct-swatch"
+                style="background: var(--sentiment-peaceful)"
+              ></span>
               {{ activeTooltip.peacefulCount }} friedlich
             </div>
             <div class="ct-total">{{ activeTooltip.articleCount }} Artikel</div>
@@ -163,7 +221,11 @@
           </div>
           <template v-for="group in groupedSources" :key="group.lang">
             <div class="source-group-label">{{ group.label }}</div>
-            <div v-for="src in group.sources" :key="src.source" class="source-bar-row">
+            <div
+              v-for="src in group.sources"
+              :key="src.source"
+              class="source-bar-row"
+            >
               <span class="source-bar-name">{{ src.sourceName }}</span>
               <div class="source-bar-track">
                 <div class="source-bar-center"></div>
@@ -176,13 +238,15 @@
                   }"
                 ></div>
               </div>
-              <span class="source-bar-val" :style="{ color: sentimentColor(src.score) }">
-                {{ src.score > 0 ? '+' : '' }}{{ (src.score * 100).toFixed(0) }}
+              <span
+                class="source-bar-val"
+                :style="{ color: sentimentColor(src.score) }"
+              >
+                {{ src.score > 0 ? "+" : "" }}{{ (src.score * 100).toFixed(0) }}
               </span>
             </div>
           </template>
         </div>
-
       </section>
     </div>
   </div>
@@ -214,8 +278,12 @@ const {
 const { dailySentiment, recentTrend, groupedSources } = useSentiment();
 
 // ── SVG line chart constants ───────────────────────────────────────────────
-const CW = 400, CH = 80;
-const CT = 4, CB = 58, CL = 6, CR = 394;
+const CW = 400,
+  CH = 80;
+const CT = 4,
+  CB = 58,
+  CL = 6,
+  CR = 394;
 const CZERO = CT + (CB - CT) / 2; // zero-line y coordinate
 const CZERO_GRAD = `${((CZERO / CH) * 100).toFixed(1)}%`;
 
@@ -228,7 +296,10 @@ function cy(score: number): number {
 
 const chartPolyline = computed(() =>
   dailySentiment.value
-    .map((d, i) => `${cx(i, dailySentiment.value.length).toFixed(1)},${cy(d.score).toFixed(1)}`)
+    .map(
+      (d, i) =>
+        `${cx(i, dailySentiment.value.length).toFixed(1)},${cy(d.score).toFixed(1)}`,
+    )
     .join(" "),
 );
 
@@ -579,17 +650,23 @@ const tendencyClass = computed(() => {
   font-style: italic;
 }
 
-.tendency-chart-wrap {
+.tendency-chart-outer {
   position: relative;
   margin-bottom: 0.5rem;
+}
+.tendency-chart-wrap {
+  overflow-x: auto;
 }
 .tendency-chart {
   display: block;
   overflow: visible;
+  min-width: 400px;
 }
 .chart-dot {
   cursor: pointer;
-  transition: r 0.1s ease, opacity 0.1s ease;
+  transition:
+    r 0.1s ease,
+    opacity 0.1s ease;
 }
 .chart-dot:hover {
   opacity: 1;
