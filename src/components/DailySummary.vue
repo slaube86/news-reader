@@ -105,29 +105,55 @@
         </div>
 
         <!-- 14-day line chart -->
-        <svg class="tendency-chart" :viewBox="`0 0 ${CW} ${CH}`" width="100%">
-          <defs>
-            <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25"/>
-              <stop :offset="CZERO_GRAD" stop-color="#22c55e" stop-opacity="0"/>
-              <stop :offset="CZERO_GRAD" stop-color="#c8392b" stop-opacity="0"/>
-              <stop offset="100%" stop-color="#c8392b" stop-opacity="0.25"/>
-            </linearGradient>
-          </defs>
-          <line :x1="CL" :y1="CZERO" :x2="CR" :y2="CZERO"
-                stroke="rgba(255,255,255,0.1)" stroke-width="0.5" stroke-dasharray="3,3"/>
-          <path :d="chartArea" fill="url(#sg)"/>
-          <polyline :points="chartPolyline" fill="none"
-                    stroke="rgba(255,255,255,0.45)" stroke-width="1.5"
-                    stroke-linejoin="round" stroke-linecap="round"/>
-          <circle v-for="dot in chartDots" :key="dot.cx"
-                  :cx="dot.cx" :cy="dot.cy" r="2.5" :fill="dot.color">
-            <title>{{ dot.title }}</title>
-          </circle>
-          <text v-for="tick in chartTicks" :key="tick.x"
-                :x="tick.x" :y="CH - 1"
-                text-anchor="middle" font-size="7" fill="var(--text3)">{{ tick.label }}</text>
-        </svg>
+        <div class="tendency-chart-wrap" @touchstart="hideTooltip">
+          <svg class="tendency-chart" :viewBox="`0 0 ${CW} ${CH}`" width="100%">
+            <defs>
+              <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25"/>
+                <stop :offset="CZERO_GRAD" stop-color="#22c55e" stop-opacity="0"/>
+                <stop :offset="CZERO_GRAD" stop-color="#c8392b" stop-opacity="0"/>
+                <stop offset="100%" stop-color="#c8392b" stop-opacity="0.25"/>
+              </linearGradient>
+            </defs>
+            <line :x1="CL" :y1="CZERO" :x2="CR" :y2="CZERO"
+                  stroke="rgba(255,255,255,0.1)" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <path :d="chartArea" fill="url(#sg)"/>
+            <polyline :points="chartPolyline" fill="none"
+                      stroke="rgba(255,255,255,0.45)" stroke-width="1.5"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+            <circle
+              v-for="(day, i) in dailySentiment" :key="day.date"
+              :cx="cx(i, dailySentiment.length)" :cy="cy(day.score)"
+              r="4" :fill="sentimentColor(day.score)"
+              class="chart-dot"
+              @mouseenter="showTooltip(day, i)"
+              @mouseleave="hideTooltip"
+              @touchstart.stop.prevent="toggleTooltip(day, i)"
+            />
+            <text v-for="tick in chartTicks" :key="tick.x"
+                  :x="tick.x" :y="CH - 1"
+                  text-anchor="middle" font-size="7" fill="var(--text3)">{{ tick.label }}</text>
+          </svg>
+
+          <!-- Fancy tooltip -->
+          <div v-if="activeTooltip" class="chart-tooltip" :style="tooltipStyle">
+            <div class="ct-date">{{ activeTooltip.label }}</div>
+            <div class="ct-score" :style="{ color: sentimentColor(activeTooltip.score) }">
+              {{ activeTooltip.score > 0 ? '+' : '' }}{{ (activeTooltip.score * 100).toFixed(0) }}
+              <span class="ct-score-label">Score</span>
+            </div>
+            <div class="ct-divider"></div>
+            <div class="ct-stat">
+              <span class="ct-swatch" style="background: var(--sentiment-hostile)"></span>
+              {{ activeTooltip.hostileCount }} feindlich
+            </div>
+            <div class="ct-stat">
+              <span class="ct-swatch" style="background: var(--sentiment-peaceful)"></span>
+              {{ activeTooltip.peacefulCount }} friedlich
+            </div>
+            <div class="ct-total">{{ activeTooltip.articleCount }} Artikel</div>
+          </div>
+        </div>
 
         <!-- Per-source diverging bar chart, grouped by language -->
         <div v-if="false && groupedSources.length > 0" class="source-bars">
@@ -166,6 +192,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useDailySummary } from "@/composables/useDailySummary";
 import { useSentiment } from "@/composables/useSentiment";
+import type { DaySentiment } from "@/composables/useSentiment";
 import { useI18n } from "@/composables/useI18n";
 import { useArticlesStore } from "@/stores/articles";
 
@@ -224,14 +251,43 @@ const chartTicks = computed(() => {
     .filter(({ i }) => i % step === 0 || i === n - 1);
 });
 
-const chartDots = computed(() =>
-  dailySentiment.value.map((d, i) => ({
-    cx: cx(i, dailySentiment.value.length),
-    cy: cy(d.score),
-    color: sentimentColor(d.score),
-    title: `${d.label}: ${d.hostileCount}× feindlich / ${d.peacefulCount}× friedlich (${d.articleCount} Artikel)`,
-  })),
-);
+// ── Tooltip ───────────────────────────────────────────────────────────────
+interface ChartTooltip extends DaySentiment {
+  svgX: number;
+  svgY: number;
+}
+
+const activeTooltip = ref<ChartTooltip | null>(null);
+
+function showTooltip(day: DaySentiment, i: number) {
+  activeTooltip.value = {
+    ...day,
+    svgX: cx(i, dailySentiment.value.length),
+    svgY: cy(day.score),
+  };
+}
+function hideTooltip() {
+  activeTooltip.value = null;
+}
+function toggleTooltip(day: DaySentiment, i: number) {
+  if (activeTooltip.value?.date === day.date) hideTooltip();
+  else showTooltip(day, i);
+}
+
+const tooltipStyle = computed(() => {
+  if (!activeTooltip.value) return {};
+  const xPct = (activeTooltip.value.svgX / CW) * 100;
+  const yPct = (activeTooltip.value.svgY / CH) * 100;
+  const flipX = xPct > 55;
+  return {
+    left: flipX ? "auto" : `${xPct}%`,
+    right: flipX ? `${100 - xPct}%` : "auto",
+    top: `${yPct}%`,
+    transform: "translateY(-50%)",
+    marginLeft: flipX ? "0" : "10px",
+    marginRight: flipX ? "10px" : "0",
+  };
+});
 
 function sourceBarLeft(score: number): string {
   return score < 0 ? `${(50 + score * 50).toFixed(1)}%` : "50%";
@@ -523,10 +579,83 @@ const tendencyClass = computed(() => {
   font-style: italic;
 }
 
+.tendency-chart-wrap {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
 .tendency-chart {
   display: block;
   overflow: visible;
-  margin-bottom: 0.5rem;
+}
+.chart-dot {
+  cursor: pointer;
+  transition: r 0.1s ease, opacity 0.1s ease;
+}
+.chart-dot:hover {
+  opacity: 1;
+  r: 5;
+}
+
+/* ── Fancy tooltip ── */
+.chart-tooltip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  min-width: 140px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+.ct-date {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.ct-score {
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+.ct-score-label {
+  font-size: 0.58rem;
+  color: var(--text3);
+  font-family: var(--font);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.ct-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.3rem 0;
+}
+.ct-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.ct-swatch {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ct-total {
+  font-size: 0.65rem;
+  color: var(--text3);
+  margin-top: 0.2rem;
 }
 
 .source-bars-axis {
