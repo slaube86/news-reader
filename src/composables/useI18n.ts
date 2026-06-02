@@ -50,6 +50,12 @@ const messages: Record<string, Record<string, string>> = {
     "summary.countries": "Erwähnte Länder",
     "summary.trending": "Trending",
     "summary.timeline": "Zeitverlauf",
+    "summary.tendency": "Tendenz",
+    "summary.tendencyEsc": "Eskalation",
+    "summary.tendencyDesc": "Entspannung",
+    "summary.tendencyMixed": "Gemischt",
+    "summary.tendencyNeutral": "Neutral",
+    "summary.tendencyHint": "Basiert auf Schlüsselwörtern in Titeln & Beschreibungen",
 
     // LoadingState
     "loading.feeds": "Feeds werden geladen…",
@@ -158,6 +164,12 @@ const messages: Record<string, Record<string, string>> = {
     "summary.countries": "Mentioned Countries",
     "summary.trending": "Trending",
     "summary.timeline": "Timeline",
+    "summary.tendency": "Tendency",
+    "summary.tendencyEsc": "Escalation",
+    "summary.tendencyDesc": "De-escalation",
+    "summary.tendencyMixed": "Mixed",
+    "summary.tendencyNeutral": "Neutral",
+    "summary.tendencyHint": "Based on keywords in titles & descriptions",
 
     // LoadingState
     "loading.feeds": "Loading feeds…",

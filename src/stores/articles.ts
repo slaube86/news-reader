@@ -19,6 +19,14 @@ export const useArticlesStore = defineStore("articles", () => {
   const currentSource = ref("today");
   const searchKeyword = ref("");
   const sortMode = ref<"date" | "dateAsc" | "source">("date");
+  const hiddenSources = ref<Set<string>>(new Set());
+
+  function toggleHiddenSource(source: string) {
+    const next = new Set(hiddenSources.value);
+    if (next.has(source)) next.delete(source);
+    else next.add(source);
+    hiddenSources.value = next;
+  }
 
   const filteredItems = computed(() => {
     let items: Article[];
@@ -34,6 +42,10 @@ export const useArticlesStore = defineStore("articles", () => {
       });
     } else {
       items = allItems.value.filter((i) => i.source === currentSource.value);
+    }
+
+    if (hiddenSources.value.size > 0) {
+      items = items.filter((i) => !hiddenSources.value.has(i.source));
     }
 
     const kw = searchKeyword.value.toLowerCase().trim();
@@ -153,6 +165,8 @@ export const useArticlesStore = defineStore("articles", () => {
     filteredItems,
     todayCount,
     sourceCounts,
+    hiddenSources,
+    toggleHiddenSource,
     mergeArticles,
     loadFromDB,
     syncSavedArticleIds,

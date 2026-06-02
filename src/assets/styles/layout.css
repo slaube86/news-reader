@@ -452,8 +452,15 @@
   background: linear-gradient(to bottom, transparent, var(--bg2));
   pointer-events: none;
 }
+
+/* ── RTL (Farsi) articles ────────────────────────────────────────────────── */
+.article[dir="rtl"] .art-translate-btn,
+.article[dir="rtl"] .art-expand-btn {
+  display: block;
+  text-align: right;
+}
 .art-expand-btn {
-  margin-right: 10px;
+  margin-inline-end: 10px;
   display: inline-flex;
   align-items: center;
   gap: 3px;

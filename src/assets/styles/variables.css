@@ -12,4 +12,7 @@
   --green: #22c55e;
   --font: 'IBM Plex Sans', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
+  --sentiment-hostile: #c8392b;
+  --sentiment-neutral: #a07820;
+  --sentiment-peaceful: #22c55e;
 }

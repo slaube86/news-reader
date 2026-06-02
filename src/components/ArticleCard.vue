@@ -1,5 +1,5 @@
 <template>
-  <div class="article">
+  <div class="article" :dir="articleSourceLang === 'fa' ? 'rtl' : undefined" :lang="articleSourceLang">
     <a :href="article.link || '#'" target="_blank" rel="noopener noreferrer">
       <div class="art-top">
         <span class="src-tag" :class="`tag-${article.source}`">{{
@@ -40,7 +40,7 @@
       <button class="art-translate-btn" @click.prevent.stop="doTranslate">
         {{ t("card.translate", { lang: targetLangLabel }) }}
       </button>
-      <div v-if="translation" class="art-translation">{{ translation }}</div>
+      <div v-if="translation" class="art-translation" :dir="translationLang === 'fa' ? 'rtl' : 'ltr'">{{ translation }}</div>
     </template>
   </div>
 </template>
