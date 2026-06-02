@@ -122,7 +122,11 @@
         <!-- 14-day line chart -->
         <div class="tendency-chart-outer">
           <div class="tendency-chart-wrap" @touchstart="hideTooltip">
-            <svg class="tendency-chart" :viewBox="`0 0 ${CW} ${CH}`" width="100%">
+            <svg
+              class="tendency-chart"
+              :viewBox="`0 0 ${CW} ${CH}`"
+              width="100%"
+            >
               <defs>
                 <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25" />
@@ -136,7 +140,11 @@
                     stop-color="#c8392b"
                     stop-opacity="0"
                   />
-                  <stop offset="100%" stop-color="#c8392b" stop-opacity="0.25" />
+                  <stop
+                    offset="100%"
+                    stop-color="#c8392b"
+                    stop-opacity="0.25"
+                  />
                 </linearGradient>
               </defs>
               <line
@@ -660,7 +668,7 @@ const tendencyClass = computed(() => {
 .tendency-chart {
   display: block;
   overflow: visible;
-  min-width: 400px;
+  min-width: 700px;
 }
 .chart-dot {
   cursor: pointer;
